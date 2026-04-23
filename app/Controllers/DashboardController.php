@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Models\Dashboard;
+
+class DashboardController extends Controller
+{
+    public function index(): void
+    {
+        $dashboardModel = new Dashboard();
+        $keyword = trim((string) $this->request->input('q', ''));
+        $currentUser = session_get('user', [
+            'name' => 'Quản trị hệ thống',
+            'role' => 'admin',
+        ]);
+
+        $this->view('dashboard.index', [
+            'title' => '',
+            'currentUser' => $currentUser,
+            'stats' => $dashboardModel->stats(),
+            'recentSuppliers' => $dashboardModel->recentSuppliers(),
+            'searchKeyword' => $keyword,
+            'searchResults' => $dashboardModel->globalSearch($keyword),
+        ]);
+    }
+}
