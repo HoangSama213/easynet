@@ -12,7 +12,8 @@ class ItemController extends Controller
         $keyword = trim((string) $this->request->input('keyword', ''));
         $categoryId = (int) $this->request->input('category_id', 0);
         $page = (int) $this->request->input('page', 1);
-        $pagination = $supplierModel->paginate($keyword, $categoryId, $page, 5);
+        $categories = $supplierModel->categories();
+        $pagination = $supplierModel->paginate($keyword, $categoryId, $page, 8);
 
         $this->view('items.index', [
             'title' => 'Quản lý nhà cung cấp',
@@ -20,7 +21,14 @@ class ItemController extends Controller
             'pagination' => $pagination,
             'keyword' => $keyword,
             'categoryId' => $categoryId,
-            'categories' => $supplierModel->categories(),
+            'categories' => $categories,
+            'topbarFilters' => [
+                'action' => base_url('items'),
+                'keyword' => $keyword,
+                'categoryId' => $categoryId,
+                'categories' => $categories,
+                'placeholder' => 'Tìm tên NCC, sản phẩm, website...',
+            ],
         ]);
     }
 

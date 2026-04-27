@@ -1,6 +1,7 @@
 <?php
 
-use App\Controllers\AuthController;
+ 
+ use App\Controllers\AuthController;
 use App\Controllers\CustomerController;
 use App\Controllers\DashboardController;
 use App\Controllers\ElectromechanicalLightCurrentController;
@@ -9,6 +10,8 @@ use App\Controllers\ItemController;
 use App\Controllers\PartnerController;
 use App\Controllers\SmartSolutionController;
 use App\Controllers\SupplierProductController;
+use App\Controllers\ThongBaoController;
+use App\Controllers\ComboController;
 use App\Core\Router;
 
 /** @var Router $router */
@@ -61,6 +64,30 @@ $router->post('/khach-hang/delete/{id}', [CustomerController::class, 'destroy'])
 
 $router->get('/supplier-products', [SupplierProductController::class, 'index']);
 $router->get('/supplier-products/create', [SupplierProductController::class, 'create']);
+$router->get('/supplier-products/history', [SupplierProductController::class, 'historyIndex']);
+$router->get('/supplier-products/media', [SupplierProductController::class, 'mediaIndex']);
+$router->get('/supplier-products/relations', [SupplierProductController::class, 'relationsIndex']);
 $router->post('/supplier-products/store', [SupplierProductController::class, 'store']);
-$router->get('/supplier-products/{nccId}/{chiTietId}', [SupplierProductController::class, 'show']);
-$router->post('/supplier-products/{nccId}/{chiTietId}/update', [SupplierProductController::class, 'update']);
+$router->get('/supplier-products/{id}/media', [SupplierProductController::class, 'mediaShow']);
+$router->post('/supplier-products/{id}/media/update', [SupplierProductController::class, 'mediaUpdate']);
+$router->get('/supplier-products/{id}/relations', [SupplierProductController::class, 'relationsShow']);
+$router->post('/supplier-products/{id}/relations/update', [SupplierProductController::class, 'relationsUpdate']);
+$router->get('/supplier-products/{id}', [SupplierProductController::class, 'show']);
+$router->post('/supplier-products/{id}/update', [SupplierProductController::class, 'update']);
+$router->post('/supplier-products/{id}/delete', [SupplierProductController::class, 'destroy']);
+
+$router->get('/combos', [ComboController::class, 'index']);
+$router->get('/combos/create', [ComboController::class, 'create']);
+$router->get('/combos/campaigns', [ComboController::class, 'campaigns']);
+$router->post('/combos/campaigns/store', [ComboController::class, 'campaignStore']);
+$router->post('/combos/campaigns/{id}/update', [ComboController::class, 'campaignUpdate']);
+$router->post('/combos/campaigns/{id}/delete', [ComboController::class, 'campaignDestroy']);
+$router->post('/combos/store', [ComboController::class, 'store']);
+$router->get('/combos/analytics', [ComboController::class, 'analytics']);
+$router->get('/sales', [ComboController::class, 'sales']);
+$router->get('/thong-bao', [ThongBaoController::class, 'index']);
+$router->post('/thong-bao/danh-dau-da-doc', [ThongBaoController::class, 'markAllRead']);
+$router->get('/combos/{id}', [ComboController::class, 'show']);
+$router->get('/combos/{id}/proposal', [ComboController::class, 'proposal']);
+$router->post('/combos/{id}/update', [ComboController::class, 'update']);
+$router->post('/combos/{id}/delete', [ComboController::class, 'destroy']);

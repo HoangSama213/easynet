@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Core\Request;
 use App\Core\Response;
+use App\Models\ThongBao;
+use Throwable;
 
 class Controller
 {
@@ -13,6 +15,20 @@ class Controller
 
     protected function view(string $view, array $data = [], string $layout = 'layouts.app'): void
     {
+        if (session_get('user')) {
+            try {
+                $thongBaoModel = new ThongBao();
+                $thongBaoModel->dongBoTonKho();
+                $data['thongBaoTopbar'] = $thongBaoModel->topbarData();
+            } catch (Throwable) {
+                $data['thongBaoTopbar'] = [
+                    'so_chua_doc' => 0,
+                    'moi' => [],
+                    'truoc_do' => [],
+                ];
+            }
+        }
+
         Response::view($view, $data, $layout);
     }
 

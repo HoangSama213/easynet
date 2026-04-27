@@ -19,6 +19,11 @@ class PartnerController extends Controller
             'items' => $pagination['items'],
             'pagination' => $pagination,
             'createUrl' => base_url('doi-tac/create'),
+            'topbarFilters' => [
+                'action' => base_url('doi-tac'),
+                'keyword' => $keyword,
+                'placeholder' => 'Tìm lĩnh vực, đối tác tiêu biểu...',
+            ],
         ]);
     }
 

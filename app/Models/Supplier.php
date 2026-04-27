@@ -49,29 +49,28 @@ class Supplier
         $relationJoins = '
             LEFT JOIN (
                 SELECT
-                    lk.ncc_id,
+                    ps.ncc_id,
                     GROUP_CONCAT(DISTINCT sp.ten_san_pham ORDER BY sp.ten_san_pham SEPARATOR ", ") AS san_pham_ncc
-                FROM ncc_lien_ket_chi_tiet lk
-                INNER JOIN san_pham_chi_tiet ct ON ct.id = lk.chi_tiet_id
-                INNER JOIN san_pham_ncc sp ON sp.id = ct.san_pham_id
-                GROUP BY lk.ncc_id
+                FROM ncc_san_pham_chi_tiet ps
+                INNER JOIN san_pham_ncc sp ON sp.id = ps.san_pham_id
+                GROUP BY ps.ncc_id
             ) sp_rel ON sp_rel.ncc_id = n.id
             LEFT JOIN (
                 SELECT
-                    lk.ncc_id,
-                    GROUP_CONCAT(DISTINCT ct.thuong_hieu ORDER BY ct.thuong_hieu SEPARATOR ", ") AS thuong_hieu_phan_phoi
-                FROM ncc_lien_ket_chi_tiet lk
-                INNER JOIN san_pham_chi_tiet ct ON ct.id = lk.chi_tiet_id
-                WHERE ct.thuong_hieu IS NOT NULL AND TRIM(ct.thuong_hieu) <> ""
-                GROUP BY lk.ncc_id
+                    ps.ncc_id,
+                    GROUP_CONCAT(DISTINCT th.ten_thuong_hieu ORDER BY th.ten_thuong_hieu SEPARATOR ", ") AS thuong_hieu_phan_phoi
+                FROM ncc_san_pham_chi_tiet ps
+                INNER JOIN san_pham_chi_tiet ct ON ct.id = ps.chi_tiet_id
+                INNER JOIN thuong_hieu th ON th.id = ct.thuong_hieu_id
+                GROUP BY ps.ncc_id
             ) th_rel ON th_rel.ncc_id = n.id
             LEFT JOIN (
                 SELECT
-                    lk.ncc_id,
+                    ps.ncc_id,
                     GROUP_CONCAT(DISTINCT ct.ten_chi_tiet ORDER BY ct.ten_chi_tiet SEPARATOR ", ") AS san_pham_chi_tiet
-                FROM ncc_lien_ket_chi_tiet lk
-                INNER JOIN san_pham_chi_tiet ct ON ct.id = lk.chi_tiet_id
-                GROUP BY lk.ncc_id
+                FROM ncc_san_pham_chi_tiet ps
+                INNER JOIN san_pham_chi_tiet ct ON ct.id = ps.chi_tiet_id
+                GROUP BY ps.ncc_id
             ) ct_rel ON ct_rel.ncc_id = n.id';
 
         $totalRow = $this->database->first(

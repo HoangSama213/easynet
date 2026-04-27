@@ -54,27 +54,28 @@ class Dashboard
         return $this->database->query(
             'WITH sp AS (
                 SELECT
-                    lk.ncc_id,
+                    ps.ncc_id,
                     GROUP_CONCAT(DISTINCT p.ten_san_pham ORDER BY p.ten_san_pham SEPARATOR ", ") AS san_pham_ncc_lk
-                FROM ncc_lien_ket_san_pham lk
-                INNER JOIN san_pham_ncc p ON p.id = lk.san_pham_id
-                GROUP BY lk.ncc_id
+                FROM ncc_san_pham_chi_tiet ps
+                INNER JOIN san_pham_ncc p ON p.id = ps.san_pham_id
+                GROUP BY ps.ncc_id
             ),
             th AS (
                 SELECT
-                    lk.ncc_id,
-                    GROUP_CONCAT(DISTINCT t.ten_thuong_hieu ORDER BY t.ten_thuong_hieu SEPARATOR ", ") AS thuong_hieu_lk
-                FROM ncc_lien_ket_thuong_hieu lk
-                INNER JOIN thuong_hieu t ON t.id = lk.thuong_hieu_id
-                GROUP BY lk.ncc_id
+                    ps.ncc_id,
+                    GROUP_CONCAT(DISTINCT th.ten_thuong_hieu ORDER BY th.ten_thuong_hieu SEPARATOR ", ") AS thuong_hieu_lk
+                FROM ncc_san_pham_chi_tiet ps
+                INNER JOIN san_pham_chi_tiet ct ON ct.id = ps.chi_tiet_id
+                INNER JOIN thuong_hieu th ON th.id = ct.thuong_hieu_id
+                GROUP BY ps.ncc_id
             ),
             ct AS (
                 SELECT
-                    lk.ncc_id,
+                    ps.ncc_id,
                     GROUP_CONCAT(DISTINCT c.ten_chi_tiet ORDER BY c.ten_chi_tiet SEPARATOR ", ") AS san_pham_chi_tiet_lk
-                FROM ncc_lien_ket_chi_tiet lk
-                INNER JOIN san_pham_chi_tiet c ON c.id = lk.chi_tiet_id
-                GROUP BY lk.ncc_id
+                FROM ncc_san_pham_chi_tiet ps
+                INNER JOIN san_pham_chi_tiet c ON c.id = ps.chi_tiet_id
+                GROUP BY ps.ncc_id
             )
             SELECT
                 n.id,

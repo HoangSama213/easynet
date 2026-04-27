@@ -22,6 +22,11 @@ class IctInfrastructureController extends Controller
             'countLabel' => 'hệ sinh thái',
             'basePath' => 'ha-tang-ict',
             'createUrl' => base_url('ha-tang-ict/create'),
+            'topbarFilters' => [
+                'action' => base_url('ha-tang-ict'),
+                'keyword' => $keyword,
+                'placeholder' => 'Tìm hệ sinh thái, chi tiết, hãng nổi bật, sản phẩm...',
+            ],
         ]);
     }
 

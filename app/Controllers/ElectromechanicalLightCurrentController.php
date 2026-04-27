@@ -22,6 +22,11 @@ class ElectromechanicalLightCurrentController extends Controller
             'countLabel' => 'hệ sinh thái',
             'basePath' => 'co-dien-dien-nhe',
             'createUrl' => base_url('co-dien-dien-nhe/create'),
+            'topbarFilters' => [
+                'action' => base_url('co-dien-dien-nhe'),
+                'keyword' => $keyword,
+                'placeholder' => 'Tìm hệ sinh thái, chi tiết, hãng nổi bật, sản phẩm...',
+            ],
         ]);
     }
 

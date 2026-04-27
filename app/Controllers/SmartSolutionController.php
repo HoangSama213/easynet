@@ -22,6 +22,11 @@ class SmartSolutionController extends Controller
             'countLabel' => 'hệ sinh thái',
             'basePath' => 'smart-solution',
             'createUrl' => base_url('smart-solution/create'),
+            'topbarFilters' => [
+                'action' => base_url('smart-solution'),
+                'keyword' => $keyword,
+                'placeholder' => 'Tìm hệ sinh thái, chi tiết, hãng nổi bật, sản phẩm...',
+            ],
         ]);
     }
 

@@ -10,76 +10,350 @@
     $jsFile = dirname(__DIR__, 3) . '/public/assets/js/app.js';
     $cssVersion = is_file($cssFile) ? (string) filemtime($cssFile) : '1';
     $jsVersion = is_file($jsFile) ? (string) filemtime($jsFile) : '1';
+    $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+    $hasTopbarFilters = !empty($topbarFilters);
+    $hasTopbarButton = !empty($topbarButton['label']) && !empty($topbarButton['url']);
+    $hasSessionUser = (bool) session_get('user');
+    $hasDesktopTopbarContent = $hasTopbarFilters || $hasTopbarButton || $hasSessionUser;
+    $currentRequestTarget = $_SERVER['REQUEST_URI'] ?? base_url('thong-bao');
+    $thongBaoTopbar = $thongBaoTopbar ?? [
+        'so_chua_doc' => 0,
+        'moi' => [],
+        'truoc_do' => [],
+    ];
+
+    $isProductCreate = str_contains($requestUri, '/supplier-products/create');
+    $isProductHistory = str_contains($requestUri, '/supplier-products/history');
+    $isProductMedia = (bool) preg_match('#/supplier-products(?:/\d+)?/media(?:/|$)#', $requestUri);
+    $isProductRelations = (bool) preg_match('#/supplier-products(?:/\d+)?/relations(?:/|$)#', $requestUri);
+    $isProductList = str_contains($requestUri, '/supplier-products')
+        && !$isProductCreate
+        && !$isProductHistory
+        && !$isProductMedia
+        && !$isProductRelations;
+
+    $navGroups = [
+        [
+            'label' => 'Tổng quan',
+            'url' => base_url(),
+            'active' => !str_contains($requestUri, '/items')
+                && !str_contains($requestUri, '/supplier-products')
+                && !str_contains($requestUri, '/combos')
+                && !str_contains($requestUri, '/sales')
+                && !str_contains($requestUri, '/thong-bao')
+                && !str_contains($requestUri, '/co-dien-dien-nhe')
+                && !str_contains($requestUri, '/ha-tang-ict')
+                && !str_contains($requestUri, '/smart-solution')
+                && !str_contains($requestUri, '/doi-tac')
+                && !str_contains($requestUri, '/khach-hang'),
+        ],
+        [
+            'label' => 'Nhà cung cấp',
+            'url' => base_url('items'),
+            'active' => str_contains($requestUri, '/items'),
+        ],
+        [
+            'label' => 'Danh mục',
+            'children' => [
+                [
+                    'label' => 'Cơ điện điện nhẹ',
+                    'url' => base_url('co-dien-dien-nhe'),
+                    'active' => str_contains($requestUri, '/co-dien-dien-nhe'),
+                ],
+                [
+                    'label' => 'Hạ tầng ICT',
+                    'url' => base_url('ha-tang-ict'),
+                    'active' => str_contains($requestUri, '/ha-tang-ict'),
+                ],
+                [
+                    'label' => 'Smart Solution',
+                    'url' => base_url('smart-solution'),
+                    'active' => str_contains($requestUri, '/smart-solution'),
+                ],
+                [
+                    'label' => 'Đối tác',
+                    'url' => base_url('doi-tac'),
+                    'active' => str_contains($requestUri, '/doi-tac'),
+                ],
+                [
+                    'label' => 'Khách hàng',
+                    'url' => base_url('khach-hang'),
+                    'active' => str_contains($requestUri, '/khach-hang'),
+                ],
+            ],
+        ],
+        [
+            'label' => 'Sản phẩm',
+            'children' => [
+                [
+                    'label' => 'Danh sách sản phẩm',
+                    'url' => base_url('supplier-products'),
+                    'active' => $isProductList,
+                ],
+                [
+                    'label' => 'Lịch sử thay đổi giá',
+                    'url' => base_url('supplier-products/history'),
+                    'active' => $isProductHistory,
+                ],
+                [
+                    'label' => 'Tài nguyên media',
+                    'url' => base_url('supplier-products/media'),
+                    'active' => $isProductMedia,
+                ],
+                [
+                    'label' => 'Cross-sell / Up-sell',
+                    'url' => base_url('supplier-products/relations'),
+                    'active' => $isProductRelations,
+                ],
+                [
+                    'label' => 'Thêm sản phẩm',
+                    'url' => base_url('supplier-products/create'),
+                    'active' => $isProductCreate,
+                ],
+            ],
+        ],
+        [
+            'label' => 'Sales',
+            'url' => base_url('sales'),
+            'active' => str_contains($requestUri, '/sales'),
+        ],
+        [
+            'label' => 'Thông báo',
+            'url' => base_url('thong-bao'),
+            'active' => str_contains($requestUri, '/thong-bao'),
+        ],
+        [
+            'label' => 'Combo',
+            'children' => [
+                [
+                    'label' => 'Danh sách combo',
+                    'url' => base_url('combos'),
+                    'active' => str_contains($requestUri, '/combos')
+                        && !str_contains($requestUri, '/combos/create')
+                        && !str_contains($requestUri, '/combos/campaigns')
+                        && !str_contains($requestUri, '/combos/analytics'),
+                ],
+                [
+                    'label' => 'Thêm combo',
+                    'url' => base_url('combos/create'),
+                    'active' => str_contains($requestUri, '/combos/create'),
+                ],
+                [
+                    'label' => 'Phân tích & Tối ưu',
+                    'url' => base_url('combos/analytics'),
+                    'active' => str_contains($requestUri, '/combos/analytics'),
+                ],
+            ],
+        ],
+        [
+            'label' => 'Chiến dịch marketing',
+            'url' => base_url('combos/campaigns'),
+            'active' => str_contains($requestUri, '/combos/campaigns'),
+        ],
+    ];
     ?>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= e(asset('assets/css/app.css') . '?v=' . $cssVersion) ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-        referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer">
     <script src="<?= e(asset('assets/js/app.js') . '?v=' . $jsVersion) ?>" defer></script>
 </head>
 
 <body>
-    <?php $requestUri = $_SERVER['REQUEST_URI'] ?? ''; ?>
-
     <div class="app-shell">
         <div class="nav-backdrop" data-nav-backdrop></div>
 
         <aside class="sidebar" data-sidebar>
             <div class="sidebar-head">
-                <div class="logo-box">
-                    <?php if (is_file(dirname(__DIR__, 3) . '/public/logo_easynet.svg')): ?>
-                    <img src="<?= e(asset('logo_easynet.svg')) ?>" alt="EasyNet">
-                    <?php else: ?>
-                    <span class="logo-fallback">EasyNet</span>
-                    <?php endif; ?>
-                </div>
+                <a class="brand" href="<?= e(base_url()) ?>">
+                    <span class="brand-mark">
+                        <?php if (is_file(dirname(__DIR__, 3) . '/public/logo_easynet.svg')): ?>
+                        <img src="<?= e(asset('logo_easynet.svg')) ?>" alt="EasyNet">
+                        <?php else: ?>
+                        <span class="brand-mark-fallback">E</span>
+                        <?php endif; ?>
+                    </span>
+                    <span class="brand-name">EASYNET</span>
+                </a>
 
                 <button type="button" class="burger-btn burger-close" data-nav-close aria-label="Đóng menu">
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
 
-            <nav class="nav-list">
-                <a class="nav-item <?= !str_contains($requestUri, '/items') && !str_contains($requestUri, '/supplier-products') && !str_contains($requestUri, '/co-dien-dien-nhe') && !str_contains($requestUri, '/ha-tang-ict') && !str_contains($requestUri, '/smart-solution') && !str_contains($requestUri, '/doi-tac') && !str_contains($requestUri, '/khach-hang') ? 'active' : '' ?>"
-                    href="<?= e(base_url()) ?>">Tổng quan</a>
-                <a class="nav-item <?= str_contains($requestUri, '/items') ? 'active' : '' ?>"
-                    href="<?= e(base_url('items')) ?>">Ngành</a>
-                <a class="nav-item <?= str_contains($requestUri, '/co-dien-dien-nhe') ? 'active' : '' ?>"
-                    href="<?= e(base_url('co-dien-dien-nhe')) ?>">Cơ điện điện nhẹ</a>
-                <a class="nav-item <?= str_contains($requestUri, '/ha-tang-ict') ? 'active' : '' ?>"
-                    href="<?= e(base_url('ha-tang-ict')) ?>">Hạ tầng ICT</a>
-                <a class="nav-item <?= str_contains($requestUri, '/smart-solution') ? 'active' : '' ?>"
-                    href="<?= e(base_url('smart-solution')) ?>">Smart Solution</a>
-                <a class="nav-item <?= str_contains($requestUri, '/doi-tac') ? 'active' : '' ?>"
-                    href="<?= e(base_url('doi-tac')) ?>">Đối tác</a>
-                <a class="nav-item <?= str_contains($requestUri, '/khach-hang') ? 'active' : '' ?>"
-                    href="<?= e(base_url('khach-hang')) ?>">Khách hàng</a>
-                <a class="nav-item <?= str_contains($requestUri, '/supplier-products') ? 'active' : '' ?>"
-                    href="<?= e(base_url('supplier-products')) ?>">Sản phẩm</a>
+            <nav class="nav-list" aria-label="Điều hướng chính">
+                <?php foreach ($navGroups as $index => $group): ?>
+                <?php if (!empty($group['children'])): ?>
+                <?php
+                    $groupId = 'nav-group-' . $index;
+                    $groupActive = false;
+                    foreach ($group['children'] as $child) {
+                        if (!empty($child['active'])) {
+                            $groupActive = true;
+                            break;
+                        }
+                    }
+                ?>
+                <div class="nav-group">
+                    <button
+                        type="button"
+                        class="nav-group-toggle <?= $groupActive ? 'active' : '' ?>"
+                        data-nav-group-toggle
+                        data-target="<?= e($groupId) ?>"
+                        aria-expanded="false">
+                        <span><?= e($group['label']) ?></span>
+                        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                    </button>
+
+                    <div
+                        id="<?= e($groupId) ?>"
+                        class="nav-group-body"
+                        data-nav-group-body
+                        hidden>
+                        <?php foreach ($group['children'] as $child): ?>
+                        <a class="nav-item nav-subitem <?= !empty($child['active']) ? 'active' : '' ?>" href="<?= e($child['url']) ?>">
+                            <?= e($child['label']) ?>
+                        </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php else: ?>
+                <a class="nav-item <?= !empty($group['active']) ? 'active' : '' ?>" href="<?= e($group['url']) ?>">
+                    <?= e($group['label']) ?>
+                </a>
+                <?php endif; ?>
+                <?php endforeach; ?>
             </nav>
         </aside>
 
         <main class="content">
             <div class="page-shell">
-                <div class="topbar">
+                <header class="topbar <?= $hasDesktopTopbarContent ? '' : 'topbar-mobile-only' ?>">
                     <button type="button" class="burger-btn" data-nav-toggle aria-label="Mở menu">
                         <i class="fa-solid fa-bars" aria-hidden="true"></i>
                     </button>
 
-                    <div class="topbar-actions">
-                        <?php if (!empty($topbarButton['label']) && !empty($topbarButton['url'])): ?>
-                        <a class="btn <?= ($topbarButton['label'] ?? '') === '+' ? 'btn-icon' : '' ?>"
-                            href="<?= e($topbarButton['url']) ?>"
-                            aria-label="Thêm mới"><?= e($topbarButton['label']) ?></a>
+                    <div class="topbar-main">
+                        <?php if ($hasTopbarFilters): ?>
+                        <form method="GET" action="<?= e($topbarFilters['action'] ?? base_url()) ?>" class="topbar-filter-form">
+                            <label class="topbar-search" for="topbar-keyword">
+                                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                                <input
+                                    id="topbar-keyword"
+                                    type="text"
+                                    name="keyword"
+                                    value="<?= e((string) ($topbarFilters['keyword'] ?? '')) ?>"
+                                    placeholder="<?= e((string) ($topbarFilters['placeholder'] ?? 'Tìm kiếm')) ?>">
+                            </label>
+
+                            <?php if (!empty($topbarFilters['categories'])): ?>
+                            <select name="category_id" aria-label="Lọc theo hạng mục" class="topbar-select">
+                                <option value="0">Tất cả hạng mục</option>
+                                <?php foreach (($topbarFilters['categories'] ?? []) as $category): ?>
+                                <option
+                                    value="<?= e((string) $category['id']) ?>"
+                                    <?= (int) ($topbarFilters['categoryId'] ?? 0) === (int) $category['id'] ? 'selected' : '' ?>>
+                                    <?= e($category['ten_hang_muc']) ?>
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <?php endif; ?>
+
+                            <button type="submit" class="btn filter-button">Lọc</button>
+                        </form>
+                        <?php else: ?>
+                        <div class="topbar-spacer"></div>
                         <?php endif; ?>
 
-                        <?php if (session_get('user')): ?>
-                        <form method="POST" action="<?= e(base_url('logout')) ?>">
-                            <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
-                            <button type="submit" class="btn-secondary">Đăng xuất</button>
-                        </form>
-                        <?php endif; ?>
+                        <div class="topbar-actions">
+                            <?php if ($hasSessionUser): ?>
+                            <div class="notification-shell" data-notification-shell>
+                                <button type="button" class="notification-bell" data-notification-toggle aria-expanded="false" aria-label="Mở thông báo">
+                                    <i class="fa-regular fa-bell" aria-hidden="true"></i>
+                                    <?php if (($thongBaoTopbar['so_chua_doc'] ?? 0) > 0): ?>
+                                    <span class="notification-badge"><?= e((string) $thongBaoTopbar['so_chua_doc']) ?></span>
+                                    <?php endif; ?>
+                                </button>
+
+                                <div class="notification-dropdown" data-notification-dropdown hidden>
+                                    <div class="notification-dropdown-head">
+                                        <div>
+                                            <strong>Thông báo</strong>
+                                            <div class="muted">Cập nhật tồn kho sản phẩm</div>
+                                        </div>
+                                        <?php if (($thongBaoTopbar['so_chua_doc'] ?? 0) > 0): ?>
+                                        <span class="notification-pill"><?= e((string) $thongBaoTopbar['so_chua_doc']) ?> chưa đọc</span>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="notification-dropdown-body">
+                                        <?php if (empty($thongBaoTopbar['moi']) && empty($thongBaoTopbar['truoc_do'])): ?>
+                                        <div class="notification-empty">Chưa có thông báo nào.</div>
+                                        <?php else: ?>
+                                        <?php if (!empty($thongBaoTopbar['moi'])): ?>
+                                        <div class="notification-section">
+                                            <div class="notification-section-title">Mới</div>
+                                            <?php foreach ($thongBaoTopbar['moi'] as $item): ?>
+                                            <a class="notification-item is-unread" href="<?= e(base_url('thong-bao')) ?>">
+                                                <span class="notification-level <?= e((string) ($item['muc_do'] ?? 'info')) ?>"></span>
+                                                <span class="notification-content">
+                                                    <strong><?= e($item['tieu_de'] ?? '') ?></strong>
+                                                    <span><?= e($item['mo_ta_ngan'] ?? '') ?></span>
+                                                    <small><?= e($item['ngay_tao_hien_thi'] ?? '') ?></small>
+                                                </span>
+                                                <span class="notification-unread-dot" aria-hidden="true"></span>
+                                            </a>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <?php endif; ?>
+
+                                        <?php if (!empty($thongBaoTopbar['truoc_do'])): ?>
+                                        <div class="notification-section">
+                                            <div class="notification-section-title">Trước đó</div>
+                                            <?php foreach ($thongBaoTopbar['truoc_do'] as $item): ?>
+                                            <a class="notification-item" href="<?= e(base_url('thong-bao')) ?>">
+                                                <span class="notification-level <?= e((string) ($item['muc_do'] ?? 'info')) ?>"></span>
+                                                <span class="notification-content">
+                                                    <strong><?= e($item['tieu_de'] ?? '') ?></strong>
+                                                    <span><?= e($item['mo_ta_ngan'] ?? '') ?></span>
+                                                    <small><?= e($item['ngay_tao_hien_thi'] ?? '') ?></small>
+                                                </span>
+                                            </a>
+                                            <?php endforeach; ?>
+                                        </div>
+                                        <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="notification-dropdown-actions">
+                                        <form method="POST" action="<?= e(base_url('thong-bao/danh-dau-da-doc')) ?>">
+                                            <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
+                                            <input type="hidden" name="redirect_to" value="<?= e($currentRequestTarget) ?>">
+                                            <button type="submit" class="btn btn-muted inline-action">Đánh dấu đã đọc</button>
+                                        </form>
+                                        <a class="notification-all-link" href="<?= e(base_url('thong-bao')) ?>">Xem tất cả thông báo →</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+
+                            <?php if ($hasTopbarButton): ?>
+                            <a
+                                class="btn <?= ($topbarButton['label'] ?? '') === '+' ? 'btn-icon' : '' ?>"
+                                href="<?= e($topbarButton['url']) ?>"
+                                aria-label="Thêm mới"><?= e($topbarButton['label']) ?></a>
+                            <?php endif; ?>
+
+                            <?php if ($hasSessionUser): ?>
+                            <form method="POST" action="<?= e(base_url('logout')) ?>">
+                                <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
+                                <button type="submit" class="btn-secondary">Đăng xuất</button>
+                            </form>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                </div>
+                </header>
 
                 <?php foreach (($_SESSION['_flash'] ?? []) as $type => $message): ?>
                 <div class="flash <?= e($type) ?>"><?= e((string) $message) ?></div>

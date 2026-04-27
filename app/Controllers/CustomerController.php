@@ -19,6 +19,11 @@ class CustomerController extends Controller
             'items' => $pagination['items'],
             'pagination' => $pagination,
             'createUrl' => base_url('khach-hang/create'),
+            'topbarFilters' => [
+                'action' => base_url('khach-hang'),
+                'keyword' => $keyword,
+                'placeholder' => 'Tìm phân loại, nhóm khách hàng, khách hàng tiêu biểu...',
+            ],
         ]);
     }
 
