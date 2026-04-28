@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\EcosystemRegistry;
 use App\Models\SystemCatalog;
 
 class SmartSolutionController extends Controller
@@ -32,6 +33,7 @@ class SmartSolutionController extends Controller
 
     public function create(): void
     {
+        $this->requireEditor();
         $model = new SystemCatalog();
 
         $this->view('catalog_entries.form', [
@@ -50,6 +52,7 @@ class SmartSolutionController extends Controller
 
     public function store(): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new SystemCatalog();
         $payload = $this->validatedPayload('smart-solution/create');
@@ -62,6 +65,7 @@ class SmartSolutionController extends Controller
 
     public function edit(string $table, string $id): void
     {
+        $this->requireEditor();
         $model = new SystemCatalog();
         $item = $model->find($table, (int) $id, $this->systems());
 
@@ -90,6 +94,7 @@ class SmartSolutionController extends Controller
 
     public function update(string $table, string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new SystemCatalog();
         $payload = $this->validatedPayload('smart-solution/edit/' . $table . '/' . (int) $id, $table);
@@ -102,6 +107,7 @@ class SmartSolutionController extends Controller
 
     public function destroy(string $table, string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new SystemCatalog();
         $model->delete($table, (int) $id, $this->systems());
@@ -151,9 +157,6 @@ class SmartSolutionController extends Controller
 
     private function systems(): array
     {
-        return [
-            ['table' => 'smart_home', 'group' => 'Smart Solution', 'label' => 'Smart Home', 'order' => 1],
-            ['table' => 'smart_office', 'group' => 'Smart Solution', 'label' => 'Smart Office', 'order' => 1],
-        ];
+        return (new EcosystemRegistry())->bySection('smart-solution');
     }
 }

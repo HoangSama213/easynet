@@ -22,7 +22,6 @@ if ($selectedProduct && empty($oldUpSell)) {
         <div>
             <h1 class="page-title">Quản lý Cross-sell / Up-sell</h1>
         </div>
-        <a class="btn btn-muted inline-action" href="<?= e(base_url('supplier-products')) ?>">Về tab sản phẩm</a>
     </div>
 
     <section class="supplier-table-card">
@@ -144,7 +143,6 @@ if ($selectedProduct && empty($oldUpSell)) {
             <div class="muted" style="margin-top: 6px;"><?= e($selectedProduct['ma_sku'] ?? '') ?> · <?= e($selectedProduct['ten_san_pham_chi_tiet'] ?? '') ?> · <?= e($selectedProduct['ten_ncc'] ?? '') ?></div>
         </div>
         <div class="stack">
-            <a class="btn btn-muted inline-action" href="<?= e(base_url('supplier-products/relations')) ?>">Về danh sách</a>
             <a class="btn btn-muted inline-action" href="<?= e(base_url('supplier-products/' . ($selectedProduct['id'] ?? ''))) ?>">Xem sản phẩm</a>
         </div>
     </div>
@@ -189,7 +187,6 @@ if ($selectedProduct && empty($oldUpSell)) {
                         </div>
                         <?php endforeach; ?>
                     </div>
-                    <button type="button" id="add-cross-sell-item" class="btn btn-muted inline-action" style="margin-top: 12px; width: auto;">Thêm gợi ý</button>
                 </section>
 
                 <section class="nested-card" style="padding: 16px;">
@@ -227,7 +224,6 @@ if ($selectedProduct && empty($oldUpSell)) {
                         </div>
                         <?php endforeach; ?>
                     </div>
-                    <button type="button" id="add-up-sell-item" class="btn btn-muted inline-action" style="margin-top: 12px; width: auto;">Thêm gợi ý</button>
                 </section>
             </div>
 

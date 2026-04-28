@@ -1,9 +1,13 @@
+<?php $canManage = function_exists('is_editor') && is_editor(); ?>
+
 <section class="supplier-page">
     <div class="supplier-page-head">
         <div>
             <h1 class="page-title">Danh sách combo</h1>
         </div>
+        <?php if ($canManage): ?>
         <a class="btn btn-icon supplier-add-btn" href="<?= e(base_url('combos/create')) ?>" aria-label="Thêm combo">+</a>
+        <?php endif; ?>
     </div>
 
     <section class="supplier-table-card">

@@ -1,9 +1,11 @@
+<?php $canManage = function_exists('is_editor') && is_editor(); ?>
+
 <section class="supplier-page">
     <div class="supplier-page-head">
         <div>
             <h1 class="page-title"><?= e($heading) ?></h1>
         </div>
-        <?php if (!empty($createUrl)): ?>
+        <?php if ($canManage && !empty($createUrl)): ?>
         <a class="btn btn-icon supplier-add-btn" href="<?= e($createUrl) ?>" aria-label="Thêm mới">+</a>
         <?php endif; ?>
     </div>
@@ -71,6 +73,7 @@
                                                     <td><?= e($detail['nha_phan_phoi'] ?? 'Chưa cập nhật') ?></td>
                                                     <td><?= e($detail['ghi_chu'] ?? 'Không có') ?></td>
                                                     <td>
+                                                        <?php if ($canManage): ?>
                                                         <div class="table-action-group">
                                                             <a class="btn btn-muted table-action-btn" href="<?= e(base_url($basePath . '/edit/' . $detail['table_name'] . '/' . $detail['id'])) ?>">Sửa</a>
                                                             <form method="POST" action="<?= e(base_url($basePath . '/delete/' . $detail['table_name'] . '/' . $detail['id'])) ?>">
@@ -78,6 +81,9 @@
                                                                 <button type="submit" class="btn btn-muted table-action-btn" onclick="return confirm('Xóa mục này?')">Xóa</button>
                                                             </form>
                                                         </div>
+                                                        <?php else: ?>
+                                                        <span class="muted">Chỉ xem</span>
+                                                        <?php endif; ?>
                                                     </td>
                                                 </tr>
                                                 <?php endforeach; ?>
@@ -130,13 +136,11 @@
                                 <div><span class="muted">Sản phẩm:</span> <?= e($detail['san_pham'] ?? 'Chưa cập nhật') ?></div>
                                 <div><span class="muted">Nhà phân phối:</span> <?= e($detail['nha_phan_phoi'] ?? 'Chưa cập nhật') ?></div>
                                 <div><span class="muted">Ghi chú:</span> <?= e($detail['ghi_chu'] ?? 'Không có') ?></div>
+                                <?php if ($canManage): ?>
                                 <div class="mobile-card-actions">
                                     <a class="btn btn-muted inline-action" href="<?= e(base_url($basePath . '/edit/' . $detail['table_name'] . '/' . $detail['id'])) ?>">Sửa</a>
-                                    <form method="POST" action="<?= e(base_url($basePath . '/delete/' . $detail['table_name'] . '/' . $detail['id'])) ?>">
-                                        <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
-                                        <button type="submit" class="btn btn-muted inline-action" onclick="return confirm('Xóa mục này?')">Xóa</button>
-                                    </form>
                                 </div>
+                                <?php endif; ?>
                             </div>
                             <?php endforeach; ?>
                         </div>

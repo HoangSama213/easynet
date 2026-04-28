@@ -16,13 +16,31 @@ class User
 
     public function findByEmail(string $email): ?array
     {
-        return $this->database->first('SELECT * FROM users WHERE email = :email LIMIT 1', [
-            'email' => $email,
-        ]);
+        return $this->database->first(
+            'SELECT id, ho_ten, email, password, role, chuc_vu, trang_thai, ngay_tao, lan_dang_nhap_cuoi
+             FROM users
+             WHERE email = :email
+             LIMIT 1',
+            ['email' => $email]
+        );
+    }
+
+    public function updateLastLogin(int $id): bool
+    {
+        return $this->database->execute(
+            'UPDATE users
+             SET lan_dang_nhap_cuoi = NOW()
+             WHERE id = :id',
+            ['id' => $id]
+        );
     }
 
     public function all(): array
     {
-        return $this->database->query('SELECT id, name, email, role, status, created_at FROM users ORDER BY created_at DESC');
+        return $this->database->query(
+            'SELECT id, ho_ten, email, role, chuc_vu, trang_thai, ngay_tao, lan_dang_nhap_cuoi
+             FROM users
+             ORDER BY ngay_tao DESC, id DESC'
+        );
     }
 }

@@ -1,3 +1,5 @@
+<?php $canManage = function_exists('is_editor') && is_editor(); ?>
+
 <section class="supplier-page">
     <div class="supplier-page-head">
         <div>
@@ -74,7 +76,11 @@
                                 <?php endif; ?>
                             </td>
                             <td>
+                                <?php if ($canManage): ?>
                                 <a class="btn btn-muted table-action-btn" href="<?= e(base_url('combos/' . $row['id'] . '/proposal')) ?>">Tạo proposal</a>
+                                <?php else: ?>
+                                <span class="muted">Chỉ xem</span>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -119,9 +125,11 @@
                         <?php endif; ?>
                     </div>
 
+                    <?php if ($canManage): ?>
                     <div class="mobile-card-actions">
                         <a class="btn btn-muted" href="<?= e(base_url('combos/' . $row['id'] . '/proposal')) ?>">Tạo proposal</a>
                     </div>
+                    <?php endif; ?>
 
                     <?php if (!empty($row['canh_bao'])): ?>
                     <div class="mobile-card-detail is-open">

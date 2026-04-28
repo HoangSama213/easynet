@@ -154,7 +154,6 @@ $deletePrompt .= ' không?';
                 </div>
                 <?php endforeach; ?>
             </div>
-            <button type="button" id="combo-add-item" class="btn btn-muted inline-action" style="margin-top: 12px; width: auto;">Thêm sản phẩm</button>
         </section>
 
         <div class="action-row" style="margin-top: 16px;">
@@ -163,7 +162,6 @@ $deletePrompt .= ' không?';
             </div>
             <?php if (!$isCreate): ?>
             <div class="action-group action-group-right">
-                <button type="button" class="btn btn-muted inline-action" data-modal-open="delete-combo-modal">Xóa</button>
                 <a class="btn btn-muted inline-action" href="<?= e(base_url('combos')) ?>">Quay lại</a>
             </div>
             <?php endif; ?>
@@ -233,7 +231,6 @@ $deletePrompt .= ' không?';
         <h3 id="delete-combo-modal-title">Xác nhận xóa</h3>
         <p><?= e($deletePrompt) ?></p>
         <div class="stack modal-actions">
-            <button type="button" class="btn btn-muted inline-action" data-modal-close>Hủy</button>
             <form method="POST" action="<?= e(base_url('combos/' . $combo['id'] . '/delete')) ?>">
                 <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
                 <button type="submit" class="inline-action">Xác nhận xóa</button>

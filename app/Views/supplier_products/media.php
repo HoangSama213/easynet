@@ -1,4 +1,5 @@
 <?php
+$canManage = function_exists('is_editor') && is_editor();
 $selectedProduct = $selectedProduct ?? null;
 $mediaData = $mediaData ?? ['media' => ['anh' => null, 'video' => null, 'pdf' => null]];
 $pagination = $pagination ?? ['page' => 1, 'last_page' => 1];
@@ -85,7 +86,6 @@ foreach ($oldMediaItems as $item) {
         <div>
             <h1 class="page-title">Tài nguyên media</h1>
         </div>
-        <a class="btn btn-muted inline-action" href="<?= e(base_url('supplier-products')) ?>">Về tab sản phẩm</a>
     </div>
 
     <section class="supplier-table-card">

@@ -34,6 +34,7 @@ class ItemController extends Controller
 
     public function create(): void
     {
+        $this->requireEditor();
         $supplierModel = new Supplier();
 
         $this->view('items.form', [
@@ -50,6 +51,7 @@ class ItemController extends Controller
 
     public function store(): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $supplierModel = new Supplier();
         $payload = $this->validatedPayload($supplierModel, 'items/create');
@@ -69,6 +71,7 @@ class ItemController extends Controller
 
     public function edit(string $id): void
     {
+        $this->requireEditor();
         $supplierModel = new Supplier();
         $supplier = $supplierModel->find((int) $id);
 
@@ -94,6 +97,7 @@ class ItemController extends Controller
 
     public function update(string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $supplierModel = new Supplier();
         $supplier = $supplierModel->find((int) $id);
@@ -114,6 +118,7 @@ class ItemController extends Controller
 
     public function destroy(string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $supplierModel = new Supplier();
         $supplier = $supplierModel->find((int) $id);

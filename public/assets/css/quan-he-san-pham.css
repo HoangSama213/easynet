@@ -1,0 +1,424 @@
+.relation-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.relation-page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.relation-page-subtitle {
+    margin: 8px 0 0;
+    color: #6b7280;
+}
+
+.relation-page-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.relation-tab {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 4px;
+    color: #4b5563;
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+}
+
+.relation-tab.is-active {
+    color: #f97316;
+    border-bottom-color: #f97316;
+}
+
+.relation-card,
+.relation-product-card,
+.relation-empty-state {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.relation-empty-state {
+    text-align: center;
+}
+
+.relation-search-shell {
+    position: relative;
+}
+
+.relation-search-label,
+.relation-step-label {
+    display: inline-flex;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #f97316;
+    text-transform: uppercase;
+    letter-spacing: 0;
+}
+
+.relation-search-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    outline: none;
+    font: inherit;
+    background: #ffffff;
+}
+
+.relation-search-input:focus {
+    border-color: #f97316;
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.12);
+}
+
+.relation-search-input-lg {
+    height: 56px;
+    font-size: 16px;
+}
+
+.relation-search-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 25;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+}
+
+.relation-search-item,
+.relation-search-empty {
+    display: flex;
+    width: 100%;
+    text-align: left;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+    border: 0;
+    background: #ffffff;
+    font: inherit;
+}
+
+.relation-search-item {
+    cursor: pointer;
+}
+
+.relation-search-item + .relation-search-item {
+    border-top: 1px solid #f3f4f6;
+}
+
+.relation-search-item:hover {
+    background: #fff7ed;
+}
+
+.relation-search-item span,
+.relation-search-empty {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.relation-product-card {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.relation-product-card-compact {
+    margin-top: 20px;
+}
+
+.relation-product-main {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.relation-product-eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+.relation-product-title {
+    margin: 6px 0;
+    font-size: 24px;
+}
+
+.relation-product-meta {
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.relation-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.relation-product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin: 0;
+}
+
+.relation-product-grid dt {
+    margin: 0 0 6px;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.relation-product-grid dd {
+    margin: 0;
+    font-weight: 600;
+}
+
+.relation-section-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.relation-section-head h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.relation-section-head p {
+    margin: 6px 0 0;
+    color: #6b7280;
+}
+
+.relation-step-card {
+    position: relative;
+}
+
+.relation-type-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.relation-radio-card {
+    position: relative;
+    display: block;
+    cursor: pointer;
+}
+
+.relation-radio-card input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.relation-radio-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 128px;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.relation-radio-card.is-selected .relation-radio-content,
+.relation-radio-card input:checked + .relation-radio-content {
+    border-color: #f97316;
+    background: rgba(249, 115, 22, 0.05);
+}
+
+.relation-toolbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.relation-inline-search {
+    flex: 1 1 auto;
+}
+
+.relation-add-btn {
+    min-width: 170px;
+    background: #f97316;
+    color: #ffffff;
+}
+
+.relation-add-btn:hover {
+    background: #ea580c;
+}
+
+.relation-table-wrap {
+    overflow-x: auto;
+}
+
+.relation-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+}
+
+.relation-table th,
+.relation-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.relation-table thead th {
+    background: #fffaf5;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.relation-table tbody tr:hover {
+    background: #fffdfb;
+}
+
+.relation-cell-sub {
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.relation-empty {
+    text-align: center;
+    color: #6b7280;
+}
+
+.relation-table-input {
+    width: 100%;
+    min-width: 120px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    outline: none;
+    font: inherit;
+}
+
+.relation-table-input:focus {
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+.relation-switch {
+    position: relative;
+    display: inline-flex;
+    width: 48px;
+    height: 28px;
+}
+
+.relation-switch input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.relation-switch-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: #d1d5db;
+    transition: background 0.2s ease;
+}
+
+.relation-switch-track::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+}
+
+.relation-switch input:checked + .relation-switch-track {
+    background: #f97316;
+}
+
+.relation-switch input:checked + .relation-switch-track::after {
+    transform: translateX(20px);
+}
+
+.relation-switch.is-disabled {
+    opacity: 0.5;
+}
+
+.relation-delete-btn {
+    min-width: 72px;
+}
+
+.is-positive {
+    color: #0f6e56;
+    font-weight: 700;
+}
+
+.is-negative {
+    color: #e24b4a;
+    font-weight: 700;
+}
+
+@media (max-width: 767px) {
+    .relation-page-head,
+    .relation-toolbar,
+    .relation-product-main {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .relation-page-tabs {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .relation-product-grid,
+    .relation-type-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .relation-add-btn {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .relation-table {
+        min-width: 640px;
+    }
+}

@@ -11,6 +11,7 @@ session_name((string) require dirname(__DIR__) . '/config/session_name.php');
 session_start();
 
 require dirname(__DIR__) . '/app/Helpers/helpers.php';
+require dirname(__DIR__) . '/middleware/auth.php';
 
 spl_autoload_register(function (string $class): void {
     $prefix = 'App\\';
@@ -42,8 +43,13 @@ try {
     exit('Không thể kết nối cơ sở dữ liệu. Vui lòng kiểm tra cấu hình trong config/database.php');
 }
 
-App::set('request', new Request());
+$request = new Request();
+App::set('request', $request);
+
+if (!in_array($request->uri(), ['/login', '/logout'], true)) {
+    require_auth();
+}
 
 $router = new Router();
 require dirname(__DIR__) . '/routes/web.php';
-$router->dispatch(App::get('request'));
+$router->dispatch($request);

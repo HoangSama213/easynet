@@ -8,6 +8,7 @@ use App\Controllers\ElectromechanicalLightCurrentController;
 use App\Controllers\IctInfrastructureController;
 use App\Controllers\ItemController;
 use App\Controllers\PartnerController;
+use App\Controllers\ProductRelationController;
 use App\Controllers\SmartSolutionController;
 use App\Controllers\SupplierProductController;
 use App\Controllers\ThongBaoController;
@@ -18,6 +19,7 @@ use App\Core\Router;
 $router->get('/', [DashboardController::class, 'index']);
 $router->get('/login', [AuthController::class, 'showLogin']);
 $router->post('/login', [AuthController::class, 'login']);
+$router->get('/logout', [AuthController::class, 'logout']);
 $router->post('/logout', [AuthController::class, 'logout']);
 
 $router->get('/items', [ItemController::class, 'index']);
@@ -66,16 +68,38 @@ $router->get('/supplier-products', [SupplierProductController::class, 'index']);
 $router->get('/supplier-products/create', [SupplierProductController::class, 'create']);
 $router->get('/supplier-products/history', [SupplierProductController::class, 'historyIndex']);
 $router->get('/supplier-products/media', [SupplierProductController::class, 'mediaIndex']);
-$router->get('/supplier-products/relations', [SupplierProductController::class, 'relationsIndex']);
 $router->post('/supplier-products/store', [SupplierProductController::class, 'store']);
 $router->get('/supplier-products/{id}/media', [SupplierProductController::class, 'mediaShow']);
 $router->post('/supplier-products/{id}/media/update', [SupplierProductController::class, 'mediaUpdate']);
-$router->get('/supplier-products/{id}/relations', [SupplierProductController::class, 'relationsShow']);
-$router->post('/supplier-products/{id}/relations/update', [SupplierProductController::class, 'relationsUpdate']);
 $router->get('/supplier-products/{id}', [SupplierProductController::class, 'show']);
 $router->post('/supplier-products/{id}/update', [SupplierProductController::class, 'update']);
 $router->post('/supplier-products/{id}/delete', [SupplierProductController::class, 'destroy']);
 
+/*
+|--------------------------------------------------------------------------
+| Tạm khóa module Quan hệ sản phẩm cho đến khi có yêu cầu mở lại
+|--------------------------------------------------------------------------
+|
+| Các route dưới đây được comment để ẩn toàn bộ trang Quan hệ sản phẩm
+| và các đường dẫn alias cũ khỏi hệ thống trong giai đoạn hiện tại.
+|
+$router->get('/supplier-products/relations', [ProductRelationController::class, 'legacyIndexRedirect']);
+$router->get('/supplier-products/{id}/relations', [ProductRelationController::class, 'legacyShowRedirect']);
+$router->post('/supplier-products/{id}/relations/update', [ProductRelationController::class, 'legacyUpdateRedirect']);
+$router->get('/quan-he-san-pham', [ProductRelationController::class, 'index']);
+$router->get('/quan-he-san-pham/quan-ly', [ProductRelationController::class, 'manage']);
+$router->get('/quan-he-san-pham/api', [ProductRelationController::class, 'api']);
+$router->post('/quan-he-san-pham/api', [ProductRelationController::class, 'api']);
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Tạm khóa module Combo cho đến khi có yêu cầu mở lại
+|--------------------------------------------------------------------------
+|
+| Các route dưới đây được comment để ẩn toàn bộ trang Combo và
+| Chiến dịch marketing khỏi hệ thống trong giai đoạn hiện tại.
+|
 $router->get('/combos', [ComboController::class, 'index']);
 $router->get('/combos/create', [ComboController::class, 'create']);
 $router->get('/combos/campaigns', [ComboController::class, 'campaigns']);
@@ -84,10 +108,15 @@ $router->post('/combos/campaigns/{id}/update', [ComboController::class, 'campaig
 $router->post('/combos/campaigns/{id}/delete', [ComboController::class, 'campaignDestroy']);
 $router->post('/combos/store', [ComboController::class, 'store']);
 $router->get('/combos/analytics', [ComboController::class, 'analytics']);
+*/
+/*
 $router->get('/sales', [ComboController::class, 'sales']);
+*/
 $router->get('/thong-bao', [ThongBaoController::class, 'index']);
 $router->post('/thong-bao/danh-dau-da-doc', [ThongBaoController::class, 'markAllRead']);
+/*
 $router->get('/combos/{id}', [ComboController::class, 'show']);
 $router->get('/combos/{id}/proposal', [ComboController::class, 'proposal']);
 $router->post('/combos/{id}/update', [ComboController::class, 'update']);
 $router->post('/combos/{id}/delete', [ComboController::class, 'destroy']);
+*/

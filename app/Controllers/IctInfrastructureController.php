@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\EcosystemRegistry;
 use App\Models\SystemCatalog;
 
 class IctInfrastructureController extends Controller
@@ -32,6 +33,7 @@ class IctInfrastructureController extends Controller
 
     public function create(): void
     {
+        $this->requireEditor();
         $model = new SystemCatalog();
 
         $this->view('catalog_entries.form', [
@@ -50,6 +52,7 @@ class IctInfrastructureController extends Controller
 
     public function store(): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new SystemCatalog();
         $payload = $this->validatedPayload('ha-tang-ict/create');
@@ -62,6 +65,7 @@ class IctInfrastructureController extends Controller
 
     public function edit(string $table, string $id): void
     {
+        $this->requireEditor();
         $model = new SystemCatalog();
         $item = $model->find($table, (int) $id, $this->systems());
 
@@ -90,6 +94,7 @@ class IctInfrastructureController extends Controller
 
     public function update(string $table, string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new SystemCatalog();
         $payload = $this->validatedPayload('ha-tang-ict/edit/' . $table . '/' . (int) $id, $table);
@@ -102,6 +107,7 @@ class IctInfrastructureController extends Controller
 
     public function destroy(string $table, string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new SystemCatalog();
         $model->delete($table, (int) $id, $this->systems());
@@ -151,16 +157,6 @@ class IctInfrastructureController extends Controller
 
     private function systems(): array
     {
-        return [
-            ['table' => 'kenh_truyen_dan_toc_do_cao', 'group' => 'Hạ tầng ICT', 'label' => 'Kênh truyền dẫn mạng viễn thông tốc độ cao', 'order' => 1],
-            ['table' => 'ha_tang_cntt_thue_ngoai', 'group' => 'Hạ tầng ICT', 'label' => 'Hạ tầng CNTT thuê ngoài', 'order' => 1],
-            ['table' => 'trung_tam_du_lieu', 'group' => 'Hạ tầng ICT', 'label' => 'Trung tâm dữ liệu', 'order' => 1],
-            ['table' => 'thiet_bi_phan_cung', 'group' => 'Hạ tầng ICT', 'label' => 'Thiết bị phần cứng', 'order' => 1],
-            ['table' => 'phan_mem', 'group' => 'Hạ tầng ICT', 'label' => 'Phần mềm', 'order' => 1],
-            ['table' => 'mang', 'group' => 'Hạ tầng ICT', 'label' => 'Mạng', 'order' => 1],
-            ['table' => 'du_lieu_luu_tru', 'group' => 'Hạ tầng ICT', 'label' => 'Dữ liệu & Lưu trữ', 'order' => 1],
-            ['table' => 'bao_mat', 'group' => 'Hạ tầng ICT', 'label' => 'Bảo mật', 'order' => 1],
-            ['table' => 'thiet_bi_tin_hoc_van_phong', 'group' => 'Hạ tầng ICT', 'label' => 'Thiết bị tin học văn phòng', 'order' => 1],
-        ];
+        return (new EcosystemRegistry())->bySection('ha-tang-ict');
     }
 }

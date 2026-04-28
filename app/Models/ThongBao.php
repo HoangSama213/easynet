@@ -7,6 +7,8 @@ use App\Core\Database;
 
 class ThongBao
 {
+    private const MAX_NOTIFICATION_ITEMS = 50;
+
     private Database $database;
 
     public function __construct()
@@ -20,7 +22,7 @@ class ThongBao
             'SELECT
                 ct.id AS chi_tiet_id,
                 ct.ten_chi_tiet,
-                MIN(COALESCE(ps.ma_sku, "")) AS ma_sku,
+                MIN(COALESCE(ct.ma_sku, "")) AS ma_sku,
                 SUM(COALESCE(ps.ton_kho, 0)) AS ton_kho_hien_tai
              FROM san_pham_chi_tiet ct
              INNER JOIN ncc_san_pham_chi_tiet ps ON ps.chi_tiet_id = ct.id
@@ -185,9 +187,22 @@ class ThongBao
     {
         $page = max(1, $page);
         $perPage = max(1, $perPage);
+        $perPage = min($perPage, self::MAX_NOTIFICATION_ITEMS);
         $offset = ($page - 1) * $perPage;
 
-        $total = (int) (($this->database->first('SELECT COUNT(*) AS total FROM thong_bao')['total'] ?? 0));
+        $total = (int) (($this->database->first('SELECT LEAST(COUNT(*), ' . self::MAX_NOTIFICATION_ITEMS . ') AS total FROM thong_bao')['total'] ?? 0));
+
+        if ($offset >= self::MAX_NOTIFICATION_ITEMS) {
+            return [
+                'items' => [],
+                'total' => $total,
+                'page' => $page,
+                'per_page' => $perPage,
+                'last_page' => max(1, (int) ceil($total / $perPage)),
+            ];
+        }
+
+        $limit = min($perPage, self::MAX_NOTIFICATION_ITEMS - $offset);
 
         $items = $this->database->query(
             'SELECT
@@ -201,10 +216,15 @@ class ThongBao
                 tb.chi_tiet_id,
                 DATE_FORMAT(tb.ngay_tao, "%d/%m/%Y %H:%i") AS ngay_tao_hien_thi,
                 COALESCE(ct.ten_chi_tiet, "") AS ten_chi_tiet
-             FROM thong_bao tb
+             FROM (
+                SELECT *
+                FROM thong_bao
+                ORDER BY ngay_tao DESC, id DESC
+                LIMIT ' . self::MAX_NOTIFICATION_ITEMS . '
+             ) tb
              LEFT JOIN san_pham_chi_tiet ct ON ct.id = tb.chi_tiet_id
              ORDER BY tb.ngay_tao DESC, tb.id DESC
-             LIMIT ' . $perPage . ' OFFSET ' . $offset
+             LIMIT ' . $limit . ' OFFSET ' . $offset
         );
 
         foreach ($items as &$item) {

@@ -35,8 +35,10 @@ class SupplierProduct
                 OR COALESCE(n.ma_ncc, "") LIKE :keyword
                 OR n.ten_ncc LIKE :keyword
                 OR ct.ten_chi_tiet LIKE :keyword
+                OR COALESCE(ct.bao_hanh, "") LIKE :keyword
+                OR COALESCE(ct.mo_ta_ngan, "") LIKE :keyword
                 OR COALESCE(th.ten_thuong_hieu, "") LIKE :keyword
-                OR COALESCE(sp.ten_san_pham, "") LIKE :keyword';
+                OR COALESCE(sp.ten_san_pham, n.san_pham_ncc, "") LIKE :keyword';
 
             $orderBy = 'ORDER BY
                 CASE
@@ -49,8 +51,8 @@ class SupplierProduct
                     WHEN n.ten_ncc LIKE :prefix_keyword THEN 7
                     WHEN COALESCE(th.ten_thuong_hieu, "") = :exact_keyword THEN 8
                     WHEN COALESCE(th.ten_thuong_hieu, "") LIKE :prefix_keyword THEN 9
-                    WHEN COALESCE(sp.ten_san_pham, "") = :exact_keyword THEN 10
-                    WHEN COALESCE(sp.ten_san_pham, "") LIKE :prefix_keyword THEN 11
+                    WHEN COALESCE(sp.ten_san_pham, n.san_pham_ncc, "") = :exact_keyword THEN 10
+                    WHEN COALESCE(sp.ten_san_pham, n.san_pham_ncc, "") LIKE :prefix_keyword THEN 11
                     ELSE 99
                 END,
                 ct.ten_chi_tiet ASC,
@@ -82,6 +84,14 @@ class SupplierProduct
                 COALESCE(ct.ma_sku, "") AS ma_sku,
                 ct.ten_chi_tiet AS ten_san_pham_chi_tiet,
                 COALESCE(th.ten_thuong_hieu, "") AS thuong_hieu,
+                COALESCE(ct.hinh_anh_san_pham, "") AS hinh_anh_san_pham,
+                COALESCE(ct.bao_hanh, "") AS bao_hanh,
+                COALESCE(ct.mo_ta_ngan, "") AS mo_ta_ngan,
+                COALESCE(ct.dac_diem, "") AS dac_diem,
+                COALESCE(ct.thong_so_ky_thuat, "") AS thong_so_ky_thuat,
+                COALESCE(ct.tinh_nang, "") AS tinh_nang,
+                COALESCE(ct.giai_phap_lien_quan, "") AS giai_phap_lien_quan,
+                COALESCE(ct.du_an_lien_quan, "") AS du_an_lien_quan,
                 ps.gia,
                 CASE
                     WHEN ps.trang_thai = "dang_ban" THEN "Đang bán"
@@ -91,7 +101,7 @@ class SupplierProduct
                 ps.trang_thai AS trang_thai_raw,
                 ps.ton_kho,
                 DATE_FORMAT(ps.ngay_cap_nhat, "%d/%m/%Y %H:%i") AS ngay_cap_nhat,
-                COALESCE(sp.ten_san_pham, "") AS ten_san_pham_ncc
+                COALESCE(sp.ten_san_pham, n.san_pham_ncc, "") AS ten_san_pham_ncc
             ' . $baseFrom . '
             ' . $where . '
             ' . $orderBy . '
@@ -124,6 +134,14 @@ class SupplierProduct
                 COALESCE(ct.ma_sku, "") AS ma_sku,
                 ct.ten_chi_tiet AS ten_san_pham_chi_tiet,
                 COALESCE(th.ten_thuong_hieu, "") AS thuong_hieu,
+                COALESCE(ct.hinh_anh_san_pham, "") AS hinh_anh_san_pham,
+                COALESCE(ct.bao_hanh, "") AS bao_hanh,
+                COALESCE(ct.mo_ta_ngan, "") AS mo_ta_ngan,
+                COALESCE(ct.dac_diem, "") AS dac_diem,
+                COALESCE(ct.thong_so_ky_thuat, "") AS thong_so_ky_thuat,
+                COALESCE(ct.tinh_nang, "") AS tinh_nang,
+                COALESCE(ct.giai_phap_lien_quan, "") AS giai_phap_lien_quan,
+                COALESCE(ct.du_an_lien_quan, "") AS du_an_lien_quan,
                 ps.gia,
                 ps.trang_thai AS trang_thai_raw,
                 CASE
@@ -134,7 +152,7 @@ class SupplierProduct
                 ps.ton_kho,
                 ps.ngay_cap_nhat,
                 DATE_FORMAT(ps.ngay_cap_nhat, "%d/%m/%Y %H:%i") AS ngay_cap_nhat_hien_thi,
-                COALESCE(sp.ten_san_pham, "") AS ten_san_pham_ncc
+                COALESCE(sp.ten_san_pham, n.san_pham_ncc, "") AS ten_san_pham_ncc
              FROM ncc_san_pham_chi_tiet ps
              INNER JOIN nha_cung_cap n ON n.id = ps.ncc_id
              INNER JOIN san_pham_chi_tiet ct ON ct.id = ps.chi_tiet_id
@@ -153,11 +171,7 @@ class SupplierProduct
         try {
             $pdo->beginTransaction();
 
-            $chiTietId = $this->resolveDetailId(
-                $payload['ten_chi_tiet'],
-                $payload['ma_sku'] ?? null,
-                $payload['thuong_hieu'] ?? null
-            );
+            $chiTietId = $this->resolveDetailId($payload);
             $sanPhamId = $this->normalizeProductId($payload['san_pham_id']);
 
             $this->database->execute(
@@ -192,7 +206,6 @@ class SupplierProduct
             );
 
             $productId = (int) $this->database->lastInsertId();
-            $this->syncLegacyLinks((int) $payload['ncc_id'], $sanPhamId, $chiTietId);
             $this->syncContent($chiTietId, $payload['content_items'] ?? []);
 
             $pdo->commit();
@@ -223,12 +236,7 @@ class SupplierProduct
         try {
             $pdo->beginTransaction();
 
-            $chiTietId = $this->resolveDetailId(
-                $payload['ten_chi_tiet'],
-                $payload['ma_sku'] ?? null,
-                $payload['thuong_hieu'] ?? null,
-                (int) ($existing['chi_tiet_id'] ?? 0)
-            );
+            $chiTietId = $this->resolveDetailId($payload, (int) ($existing['chi_tiet_id'] ?? 0));
             $sanPhamId = $this->normalizeProductId($payload['san_pham_id']);
 
             $this->database->execute(
@@ -252,7 +260,6 @@ class SupplierProduct
                 ]
             );
 
-            $this->syncLegacyLinks((int) $payload['ncc_id'], $sanPhamId, $chiTietId);
             $this->syncContent($chiTietId, $payload['content_items'] ?? []);
 
             if ($priceChanged) {
@@ -308,48 +315,6 @@ class SupplierProduct
                 ['id' => $id]
             );
 
-            $remainingSupplierUsage = $this->database->first(
-                'SELECT COUNT(*) AS total
-                 FROM ncc_san_pham_chi_tiet
-                 WHERE ncc_id = :ncc_id AND chi_tiet_id = :chi_tiet_id',
-                [
-                    'ncc_id' => $existing['ncc_id'],
-                    'chi_tiet_id' => $existing['chi_tiet_id'],
-                ]
-            );
-
-            if ((int) ($remainingSupplierUsage['total'] ?? 0) === 0) {
-                $this->database->execute(
-                    'DELETE FROM ncc_lien_ket_chi_tiet
-                     WHERE ncc_id = :ncc_id AND chi_tiet_id = :chi_tiet_id',
-                    [
-                        'ncc_id' => $existing['ncc_id'],
-                        'chi_tiet_id' => $existing['chi_tiet_id'],
-                    ]
-                );
-            }
-
-            $remainingProductUsage = $this->database->first(
-                'SELECT COUNT(*) AS total
-                 FROM ncc_san_pham_chi_tiet
-                 WHERE ncc_id = :ncc_id AND san_pham_id = :san_pham_id',
-                [
-                    'ncc_id' => $existing['ncc_id'],
-                    'san_pham_id' => $existing['san_pham_id'],
-                ]
-            );
-
-            if ((int) ($remainingProductUsage['total'] ?? 0) === 0 && !empty($existing['san_pham_id'])) {
-                $this->database->execute(
-                    'DELETE FROM ncc_lien_ket_san_pham
-                     WHERE ncc_id = :ncc_id AND san_pham_id = :san_pham_id',
-                    [
-                        'ncc_id' => $existing['ncc_id'],
-                        'san_pham_id' => $existing['san_pham_id'],
-                    ]
-                );
-            }
-
             $remainingDetailUsage = $this->database->first(
                 'SELECT COUNT(*) AS total
                  FROM ncc_san_pham_chi_tiet
@@ -358,11 +323,6 @@ class SupplierProduct
             );
 
             if ((int) ($remainingDetailUsage['total'] ?? 0) === 0) {
-                $this->database->execute(
-                    'DELETE FROM san_pham_lien_ket_chi_tiet WHERE chi_tiet_id = :chi_tiet_id',
-                    ['chi_tiet_id' => $existing['chi_tiet_id']]
-                );
-
                 $this->database->execute(
                     'DELETE FROM san_pham_chi_tiet WHERE id = :chi_tiet_id',
                     ['chi_tiet_id' => $existing['chi_tiet_id']]
@@ -587,7 +547,7 @@ class SupplierProduct
              FROM ncc_san_pham_chi_tiet ps
              INNER JOIN san_pham_chi_tiet ct ON ct.id = ps.chi_tiet_id
              INNER JOIN nha_cung_cap n ON n.id = ps.ncc_id
-             LEFT JOIN tai_nguyen_media tm ON tm.chi_tiet_id = ps.chi_tiet_id
+             LEFT JOIN tai_nguyen_san_pham tm ON tm.chi_tiet_id = ps.chi_tiet_id
         ';
 
         $totalRow = $this->database->first(
@@ -607,9 +567,9 @@ class SupplierProduct
                 COALESCE(ct.ma_sku, "") AS ma_sku,
                 ct.ten_chi_tiet AS ten_san_pham_chi_tiet,
                 n.ten_ncc,
-                SUM(CASE WHEN tm.loai = "anh" THEN 1 ELSE 0 END) AS so_anh,
-                SUM(CASE WHEN tm.loai = "video" THEN 1 ELSE 0 END) AS so_video,
-                SUM(CASE WHEN tm.loai = "pdf" THEN 1 ELSE 0 END) AS so_pdf
+                SUM(CASE WHEN tm.media_type = "image" THEN 1 ELSE 0 END) AS so_anh,
+                SUM(CASE WHEN tm.media_type = "video" THEN 1 ELSE 0 END) AS so_video,
+                SUM(CASE WHEN tm.media_type = "pdf" THEN 1 ELSE 0 END) AS so_pdf
              ' . $baseFrom . '
              ' . $where . '
              GROUP BY ps.id, ct.ma_sku, ct.ten_chi_tiet, n.ten_ncc
@@ -639,7 +599,7 @@ class SupplierProduct
 
         return [
             'product' => $product,
-            'media' => $this->productMediaNew((int) $product['chi_tiet_id']),
+            'media' => $this->productMediaSlots((int) $product['chi_tiet_id']),
         ];
     }
 
@@ -656,7 +616,7 @@ class SupplierProduct
 
         try {
             $pdo->beginTransaction();
-            $this->syncMediaNew($chiTietId, $items);
+            $this->syncMediaSlots($chiTietId, $items);
             $pdo->commit();
 
             return true;
@@ -734,6 +694,17 @@ class SupplierProduct
         return $row !== null;
     }
 
+    public function nextSkuCode(): string
+    {
+        $row = $this->database->first(
+            'SELECT MAX(CAST(SUBSTRING(ma_sku, 5) AS UNSIGNED)) AS max_sku
+             FROM san_pham_chi_tiet
+             WHERE ma_sku REGEXP "^SKU-[0-9]+$"'
+        );
+
+        return 'SKU-' . str_pad((string) (((int) ($row['max_sku'] ?? 0)) + 1), 4, '0', STR_PAD_LEFT);
+    }
+
     private function normalizeProductId(?int $sanPhamId): ?int
     {
         if ($sanPhamId === null || $sanPhamId <= 0) {
@@ -751,11 +722,25 @@ class SupplierProduct
         return $row ? (int) $row['id'] : null;
     }
 
-    private function resolveDetailId(string $detailName, ?string $maSku = null, ?string $thuongHieu = null, ?int $existingId = null): int
+    private function resolveDetailId(array $payload, ?int $existingId = null): int
     {
-        $detailName = trim($detailName);
-        $maSku = trim((string) $maSku);
-        $thuongHieuId = $this->resolveBrandId($thuongHieu);
+        $detailName = trim((string) ($payload['ten_chi_tiet'] ?? ''));
+        $maSku = trim((string) ($payload['ma_sku'] ?? ''));
+        $thuongHieuId = $this->resolveBrandId($payload['thuong_hieu'] ?? null);
+
+        $detailData = [
+            'ma_sku' => $maSku === '' ? null : $maSku,
+            'ten_chi_tiet' => $detailName,
+            'thuong_hieu_id' => $thuongHieuId,
+            'hinh_anh_san_pham' => $this->nullableText($payload['hinh_anh_san_pham'] ?? null),
+            'bao_hanh' => $this->nullableText($payload['bao_hanh'] ?? null),
+            'mo_ta_ngan' => $this->nullableText($payload['mo_ta_ngan'] ?? null),
+            'dac_diem' => $this->nullableText($payload['dac_diem'] ?? null),
+            'thong_so_ky_thuat' => $this->nullableText($payload['thong_so_ky_thuat'] ?? null),
+            'tinh_nang' => $this->nullableText($payload['tinh_nang'] ?? null),
+            'giai_phap_lien_quan' => $this->nullableText($payload['giai_phap_lien_quan'] ?? null),
+            'du_an_lien_quan' => $this->nullableText($payload['du_an_lien_quan'] ?? null),
+        ];
 
         if ($existingId !== null && $existingId > 0) {
             $this->database->execute(
@@ -763,21 +748,24 @@ class SupplierProduct
                  SET ma_sku = :ma_sku,
                      ten_chi_tiet = :ten_chi_tiet,
                      thuong_hieu_id = :thuong_hieu_id,
+                     hinh_anh_san_pham = :hinh_anh_san_pham,
+                     bao_hanh = :bao_hanh,
+                     mo_ta_ngan = :mo_ta_ngan,
+                     dac_diem = :dac_diem,
+                     thong_so_ky_thuat = :thong_so_ky_thuat,
+                     tinh_nang = :tinh_nang,
+                     giai_phap_lien_quan = :giai_phap_lien_quan,
+                     du_an_lien_quan = :du_an_lien_quan,
                      ngay_cap_nhat = NOW()
                  WHERE id = :id',
-                [
-                    'id' => $existingId,
-                    'ma_sku' => $maSku === '' ? null : $maSku,
-                    'ten_chi_tiet' => $detailName,
-                    'thuong_hieu_id' => $thuongHieuId,
-                ]
+                ['id' => $existingId] + $detailData
             );
 
             return $existingId;
         }
 
         $existing = $this->database->first(
-            'SELECT id
+            'SELECT id, COALESCE(ma_sku, "") AS ma_sku
              FROM san_pham_chi_tiet
              WHERE ten_chi_tiet = :ten_chi_tiet
              LIMIT 1',
@@ -786,34 +774,71 @@ class SupplierProduct
 
         if ($existing) {
             $existingId = (int) $existing['id'];
+            $existingSku = trim((string) ($existing['ma_sku'] ?? ''));
+
+            if ($existingSku !== '') {
+                $detailData['ma_sku'] = $existingSku;
+            }
 
             $this->database->execute(
                 'UPDATE san_pham_chi_tiet
                  SET ma_sku = :ma_sku,
                      thuong_hieu_id = :thuong_hieu_id,
+                     hinh_anh_san_pham = :hinh_anh_san_pham,
+                     bao_hanh = :bao_hanh,
+                     mo_ta_ngan = :mo_ta_ngan,
+                     dac_diem = :dac_diem,
+                     thong_so_ky_thuat = :thong_so_ky_thuat,
+                     tinh_nang = :tinh_nang,
+                     giai_phap_lien_quan = :giai_phap_lien_quan,
+                     du_an_lien_quan = :du_an_lien_quan,
                      ngay_cap_nhat = NOW()
                  WHERE id = :id',
-                [
-                    'id' => $existingId,
-                    'ma_sku' => $maSku === '' ? null : $maSku,
-                    'thuong_hieu_id' => $thuongHieuId,
-                ]
+                ['id' => $existingId] + $detailData
             );
 
             return $existingId;
         }
 
         $this->database->execute(
-            'INSERT INTO san_pham_chi_tiet (ma_sku, ten_chi_tiet, thuong_hieu_id, ngay_cap_nhat)
-             VALUES (:ma_sku, :ten_chi_tiet, :thuong_hieu_id, NOW())',
-            [
-                'ma_sku' => $maSku === '' ? null : $maSku,
-                'ten_chi_tiet' => $detailName,
-                'thuong_hieu_id' => $thuongHieuId,
-            ]
+            'INSERT INTO san_pham_chi_tiet (
+                ma_sku,
+                ten_chi_tiet,
+                thuong_hieu_id,
+                hinh_anh_san_pham,
+                bao_hanh,
+                mo_ta_ngan,
+                dac_diem,
+                thong_so_ky_thuat,
+                tinh_nang,
+                giai_phap_lien_quan,
+                du_an_lien_quan,
+                ngay_cap_nhat
+            ) VALUES (
+                :ma_sku,
+                :ten_chi_tiet,
+                :thuong_hieu_id,
+                :hinh_anh_san_pham,
+                :bao_hanh,
+                :mo_ta_ngan,
+                :dac_diem,
+                :thong_so_ky_thuat,
+                :tinh_nang,
+                :giai_phap_lien_quan,
+                :du_an_lien_quan,
+                NOW()
+            )',
+            $detailData
         );
 
         return (int) $this->database->lastInsertId();
+    }
+
+    private function nullableText(mixed $value): ?string
+    {
+        $value = trim((string) $value);
+
+        return $value === '' ? null : $value;
     }
 
     private function resolveBrandId(?string $brandName): ?int
@@ -845,41 +870,6 @@ class SupplierProduct
         return (int) $this->database->lastInsertId();
     }
 
-    private function syncLegacyLinks(int $nccId, ?int $sanPhamId, int $chiTietId): void
-    {
-        $this->database->execute(
-            'INSERT INTO ncc_lien_ket_chi_tiet (ncc_id, chi_tiet_id)
-             VALUES (:ncc_id, :chi_tiet_id)
-             ON DUPLICATE KEY UPDATE ncc_id = VALUES(ncc_id)',
-            [
-                'ncc_id' => $nccId,
-                'chi_tiet_id' => $chiTietId,
-            ]
-        );
-
-        if ($sanPhamId !== null && $sanPhamId > 0) {
-            $this->database->execute(
-                'INSERT INTO san_pham_lien_ket_chi_tiet (san_pham_id, chi_tiet_id)
-                 VALUES (:san_pham_id, :chi_tiet_id)
-                 ON DUPLICATE KEY UPDATE san_pham_id = VALUES(san_pham_id)',
-                [
-                    'san_pham_id' => $sanPhamId,
-                    'chi_tiet_id' => $chiTietId,
-                ]
-            );
-
-            $this->database->execute(
-                'INSERT INTO ncc_lien_ket_san_pham (ncc_id, san_pham_id)
-                 VALUES (:ncc_id, :san_pham_id)
-                 ON DUPLICATE KEY UPDATE ncc_id = VALUES(ncc_id)',
-                [
-                    'ncc_id' => $nccId,
-                    'san_pham_id' => $sanPhamId,
-                ]
-            );
-        }
-    }
-
     private function syncMedia(int $chiTietId, array $items): void
     {
         $this->database->execute(
@@ -907,21 +897,26 @@ class SupplierProduct
 
             $this->database->execute(
                 'INSERT INTO tai_nguyen_san_pham (
+                    ma_tai_nguyen,
                     chi_tiet_id,
                     media_type,
                     title,
                     media_url,
                     is_primary,
-                    sort_order
+                    sort_order,
+                    updated_at
                 ) VALUES (
+                    :ma_tai_nguyen,
                     :chi_tiet_id,
                     :media_type,
                     :title,
                     :media_url,
                     :is_primary,
-                    :sort_order
+                    :sort_order,
+                    NOW()
                 )',
                 [
+                    'ma_tai_nguyen' => $this->nextMediaCode(),
                     'chi_tiet_id' => $chiTietId,
                     'media_type' => $mediaType,
                     'title' => $title,
@@ -1024,39 +1019,56 @@ class SupplierProduct
         }
     }
 
-    private function syncMediaNew(int $chiTietId, array $items): void
+    private function syncMediaSlots(int $chiTietId, array $items): void
     {
         foreach ($items as $item) {
             $loai = trim((string) ($item['loai'] ?? ''));
             $url = trim((string) ($item['url'] ?? ''));
+            $mediaType = match ($loai) {
+                'anh' => 'image',
+                'video' => 'video',
+                'pdf' => 'pdf',
+                default => null,
+            };
 
-            if (!in_array($loai, ['anh', 'video', 'pdf'], true)) {
-                continue;
-            }
-
-            if ($url === '') {
+            if ($mediaType === null) {
                 continue;
             }
 
             $existing = $this->database->first(
-                'SELECT id
-                 FROM tai_nguyen_media
-                 WHERE chi_tiet_id = :chi_tiet_id AND loai = :loai
+                'SELECT id, ma_tai_nguyen
+                 FROM tai_nguyen_san_pham
+                 WHERE chi_tiet_id = :chi_tiet_id AND media_type = :media_type
                  LIMIT 1',
                 [
                     'chi_tiet_id' => $chiTietId,
-                    'loai' => $loai,
+                    'media_type' => $mediaType,
                 ]
             );
 
+            if ($url === '') {
+                if ($existing) {
+                    $this->database->execute(
+                        'DELETE FROM tai_nguyen_san_pham WHERE id = :id',
+                        ['id' => (int) $existing['id']]
+                    );
+                }
+
+                continue;
+            }
+
             if ($existing) {
                 $this->database->execute(
-                    'UPDATE tai_nguyen_media
-                     SET url = :url,
-                         updated_at = NOW()
+                    'UPDATE tai_nguyen_san_pham
+                     SET title = :title,
+                         media_url = :media_url,
+                         updated_at = NOW(),
+                         sort_order = :sort_order
                      WHERE id = :id',
                     [
-                        'url' => $url,
+                        'title' => $this->defaultMediaTitle($mediaType),
+                        'media_url' => $url,
+                        'sort_order' => $this->defaultMediaSortOrder($mediaType),
                         'id' => (int) $existing['id'],
                     ]
                 );
@@ -1064,13 +1076,32 @@ class SupplierProduct
             }
 
             $this->database->execute(
-                'INSERT INTO tai_nguyen_media (ma_tai_nguyen, chi_tiet_id, url, loai, created_at, updated_at)
-                 VALUES (:ma_tai_nguyen, :chi_tiet_id, :url, :loai, NOW(), NOW())',
+                'INSERT INTO tai_nguyen_san_pham (
+                    ma_tai_nguyen,
+                    chi_tiet_id,
+                    media_type,
+                    title,
+                    media_url,
+                    is_primary,
+                    sort_order,
+                    updated_at
+                ) VALUES (
+                    :ma_tai_nguyen,
+                    :chi_tiet_id,
+                    :media_type,
+                    :title,
+                    :media_url,
+                    0,
+                    :sort_order,
+                    NOW()
+                )',
                 [
                     'ma_tai_nguyen' => $this->nextMediaCode(),
                     'chi_tiet_id' => $chiTietId,
-                    'url' => $url,
-                    'loai' => $loai,
+                    'media_type' => $mediaType,
+                    'title' => $this->defaultMediaTitle($mediaType),
+                    'media_url' => $url,
+                    'sort_order' => $this->defaultMediaSortOrder($mediaType),
                 ]
             );
         }
@@ -1079,7 +1110,7 @@ class SupplierProduct
     private function productMedia(int $chiTietId): array
     {
         return $this->database->query(
-            'SELECT id, media_type, title, media_url, is_primary, sort_order
+            'SELECT id, ma_tai_nguyen, media_type, title, media_url, is_primary, sort_order
              FROM tai_nguyen_san_pham
              WHERE chi_tiet_id = :chi_tiet_id
              ORDER BY sort_order ASC, id ASC',
@@ -1087,13 +1118,14 @@ class SupplierProduct
         );
     }
 
-    private function productMediaNew(int $chiTietId): array
+    private function productMediaSlots(int $chiTietId): array
     {
         $rows = $this->database->query(
-            'SELECT id, ma_tai_nguyen, loai, url
-             FROM tai_nguyen_media
+            'SELECT id, ma_tai_nguyen, media_type, media_url
+             FROM tai_nguyen_san_pham
              WHERE chi_tiet_id = :chi_tiet_id
-             ORDER BY id ASC',
+               AND media_type IN ("image", "video", "pdf")
+             ORDER BY sort_order ASC, id ASC',
             ['chi_tiet_id' => $chiTietId]
         );
 
@@ -1104,13 +1136,45 @@ class SupplierProduct
         ];
 
         foreach ($rows as $row) {
-            $loai = (string) ($row['loai'] ?? '');
-            if (isset($result[$loai])) {
-                $result[$loai] = $row;
+            $slot = match ((string) ($row['media_type'] ?? '')) {
+                'image' => 'anh',
+                'video' => 'video',
+                'pdf' => 'pdf',
+                default => null,
+            };
+
+            if ($slot === null || $result[$slot] !== null) {
+                continue;
             }
+
+            $result[$slot] = [
+                'id' => (int) $row['id'],
+                'ma_tai_nguyen' => (string) ($row['ma_tai_nguyen'] ?? ''),
+                'url' => (string) ($row['media_url'] ?? ''),
+            ];
         }
 
         return $result;
+    }
+
+    private function defaultMediaTitle(string $mediaType): string
+    {
+        return match ($mediaType) {
+            'image' => 'Nhập ảnh',
+            'video' => 'Nhập video',
+            'pdf' => 'Nhập file',
+            default => 'Tài nguyên',
+        };
+    }
+
+    private function defaultMediaSortOrder(string $mediaType): int
+    {
+        return match ($mediaType) {
+            'image' => 0,
+            'video' => 1,
+            'pdf' => 2,
+            default => 99,
+        };
     }
 
     private function productContent(int $chiTietId): array

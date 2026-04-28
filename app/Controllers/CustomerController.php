@@ -29,6 +29,7 @@ class CustomerController extends Controller
 
     public function create(): void
     {
+        $this->requireEditor();
         $model = new Customer();
 
         $this->view('customers.form', [
@@ -46,6 +47,7 @@ class CustomerController extends Controller
 
     public function store(): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new Customer();
         $payload = $this->validatedPayload('khach-hang/create');
@@ -58,6 +60,7 @@ class CustomerController extends Controller
 
     public function edit(string $id): void
     {
+        $this->requireEditor();
         $model = new Customer();
         $item = $model->find((int) $id);
 
@@ -84,6 +87,7 @@ class CustomerController extends Controller
 
     public function update(string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new Customer();
         $payload = $this->validatedPayload('khach-hang/edit/' . (int) $id);
@@ -96,6 +100,7 @@ class CustomerController extends Controller
 
     public function destroy(string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new Customer();
         $model->delete((int) $id);

@@ -22,9 +22,9 @@ class Supplier
         $params = [];
         $conditions = [];
 
-        $sanPhamSelect = 'COALESCE(NULLIF(sp_rel.san_pham_ncc, ""), n.san_pham_ncc) AS san_pham_ncc';
-        $thuongHieuSelect = 'COALESCE(NULLIF(th_rel.thuong_hieu_phan_phoi, ""), n.thuong_hieu_phan_phoi) AS thuong_hieu_phan_phoi';
-        $chiTietSelect = 'COALESCE(NULLIF(ct_rel.san_pham_chi_tiet, ""), n.san_pham_chi_tiet) AS san_pham_chi_tiet';
+        $sanPhamSelect = 'COALESCE(NULLIF(n.san_pham_ncc, ""), sp_rel.san_pham_ncc, "") AS san_pham_ncc';
+        $thuongHieuSelect = 'COALESCE(NULLIF(n.thuong_hieu_phan_phoi, ""), NULLIF(th_rel.thuong_hieu_phan_phoi, ""), "") AS thuong_hieu_phan_phoi';
+        $chiTietSelect = 'COALESCE(NULLIF(n.san_pham_chi_tiet, ""), ct_rel.san_pham_chi_tiet, "") AS san_pham_chi_tiet';
 
         if ($keyword !== '') {
             $params['keyword'] = '%' . $keyword . '%';
@@ -33,9 +33,9 @@ class Supplier
                 OR n.website LIKE :keyword
                 OR n.nguoi_lien_he LIKE :keyword
                 OR n.nhom_zalo LIKE :keyword
-                OR COALESCE(NULLIF(sp_rel.san_pham_ncc, ""), n.san_pham_ncc, "") LIKE :keyword
-                OR COALESCE(NULLIF(th_rel.thuong_hieu_phan_phoi, ""), n.thuong_hieu_phan_phoi, "") LIKE :keyword
-                OR COALESCE(NULLIF(ct_rel.san_pham_chi_tiet, ""), n.san_pham_chi_tiet, "") LIKE :keyword
+                OR COALESCE(NULLIF(n.san_pham_ncc, ""), sp_rel.san_pham_ncc, "") LIKE :keyword
+                OR COALESCE(NULLIF(n.thuong_hieu_phan_phoi, ""), NULLIF(th_rel.thuong_hieu_phan_phoi, ""), "") LIKE :keyword
+                OR COALESCE(NULLIF(n.san_pham_chi_tiet, ""), ct_rel.san_pham_chi_tiet, "") LIKE :keyword
                 OR n.ghi_chu LIKE :keyword)';
         }
 

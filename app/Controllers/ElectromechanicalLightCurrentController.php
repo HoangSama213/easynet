@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\EcosystemRegistry;
 use App\Models\ElectromechanicalLightCurrent;
 
 class ElectromechanicalLightCurrentController extends Controller
@@ -32,6 +33,7 @@ class ElectromechanicalLightCurrentController extends Controller
 
     public function create(): void
     {
+        $this->requireEditor();
         $model = new ElectromechanicalLightCurrent();
 
         $this->view('catalog_entries.form', [
@@ -50,6 +52,7 @@ class ElectromechanicalLightCurrentController extends Controller
 
     public function store(): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new ElectromechanicalLightCurrent();
         $payload = $this->validatedPayload('co-dien-dien-nhe/create');
@@ -62,6 +65,7 @@ class ElectromechanicalLightCurrentController extends Controller
 
     public function edit(string $table, string $id): void
     {
+        $this->requireEditor();
         $model = new ElectromechanicalLightCurrent();
         $item = $model->find($table, (int) $id, $this->systems());
 
@@ -90,6 +94,7 @@ class ElectromechanicalLightCurrentController extends Controller
 
     public function update(string $table, string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new ElectromechanicalLightCurrent();
         $payload = $this->validatedPayload('co-dien-dien-nhe/edit/' . $table . '/' . (int) $id, $table);
@@ -102,6 +107,7 @@ class ElectromechanicalLightCurrentController extends Controller
 
     public function destroy(string $table, string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new ElectromechanicalLightCurrent();
         $model->delete($table, (int) $id, $this->systems());
@@ -151,19 +157,6 @@ class ElectromechanicalLightCurrentController extends Controller
 
     private function systems(): array
     {
-        return [
-            ['table' => 'he_thong_dien_cong_nghiep_dan_dung', 'group' => 'Cơ điện', 'label' => 'Hệ thống điện công nghiệp & dân dụng', 'order' => 1],
-            ['table' => 'he_thong_cap_thoat_nuoc', 'group' => 'Cơ điện', 'label' => 'Hệ thống cấp thoát nước', 'order' => 1],
-            ['table' => 'he_thong_dieu_hoa_thong_gio', 'group' => 'Cơ điện', 'label' => 'Hệ thống điều hòa thông gió', 'order' => 1],
-            ['table' => 'tu_mang_vat_tu_vien_thong', 'group' => 'Điện nhẹ', 'label' => 'Tủ mạng và vật tư viễn thông', 'order' => 2],
-            ['table' => 'cap_vat_tu_day_tin_hieu', 'group' => 'Điện nhẹ', 'label' => 'Cáp, vật tư dây tín hiệu', 'order' => 2],
-            ['table' => 'thiet_bi_ket_noi_tin_hieu', 'group' => 'Điện nhẹ', 'label' => 'Thiết bị kết nối tín hiệu', 'order' => 2],
-            ['table' => 'he_thong_an_ninh_giam_sat', 'group' => 'Điện nhẹ', 'label' => 'Hệ thống an ninh - giám sát điện tử', 'order' => 2],
-            ['table' => 'he_thong_kiem_soat_truy_cap', 'group' => 'Điện nhẹ', 'label' => 'Hệ thống kiểm soát truy cập', 'order' => 2],
-            ['table' => 'he_thong_thong_tin_lien_lac', 'group' => 'Điện nhẹ', 'label' => 'Hệ thống thông tin liên lạc', 'order' => 2],
-            ['table' => 'he_thong_am_thanh_trinh_chieu', 'group' => 'Điện nhẹ', 'label' => 'Hệ thống âm thanh trình chiếu', 'order' => 2],
-            ['table' => 'he_thong_canh_bao', 'group' => 'Điện nhẹ', 'label' => 'Hệ thống cảnh báo', 'order' => 2],
-            ['table' => 'he_thong_dieu_khien_tu_dong_hoa', 'group' => 'Điện nhẹ', 'label' => 'Hệ thống điều khiển - tự động hóa', 'order' => 2],
-        ];
+        return (new EcosystemRegistry())->bySection('co-dien-dien-nhe');
     }
 }

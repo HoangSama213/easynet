@@ -33,6 +33,7 @@ class ComboController extends Controller
 
     public function create(): void
     {
+        $this->requireEditor();
         $model = new Combo();
 
         $this->view('combos.form', [
@@ -50,6 +51,7 @@ class ComboController extends Controller
 
     public function store(): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $payload = $this->validatedPayload();
 
@@ -100,6 +102,7 @@ class ComboController extends Controller
 
     public function update(string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new Combo();
         $combo = $model->findById((int) $id);
@@ -133,6 +136,7 @@ class ComboController extends Controller
 
     public function destroy(string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new Combo();
         $combo = $model->findById((int) $id);
@@ -156,6 +160,7 @@ class ComboController extends Controller
 
     public function proposal(string $id): void
     {
+        $this->requireEditor();
         $model = new Combo();
         $combo = $model->findById((int) $id);
 
@@ -238,6 +243,7 @@ class ComboController extends Controller
 
     public function campaignStore(): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new Combo();
         $payload = $this->validatedCampaignPayload($model);
@@ -263,6 +269,7 @@ class ComboController extends Controller
 
     public function campaignUpdate(string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new Combo();
         $campaign = $model->campaignFindById((int) $id);
@@ -296,6 +303,7 @@ class ComboController extends Controller
 
     public function campaignDestroy(string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new Combo();
         $campaign = $model->campaignFindById((int) $id);

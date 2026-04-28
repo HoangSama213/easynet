@@ -1,4 +1,5 @@
 <?php
+$canManage = function_exists('is_editor') && is_editor();
 $campaignOld = $campaignOld ?? [];
 $campaignErrors = $campaignErrors ?? [];
 $editingCampaign = $editingCampaign ?? null;
@@ -18,9 +19,9 @@ $formValues = [
         <div>
             <h1 class="page-title">Chiến dịch marketing</h1>
         </div>
-        <a class="btn btn-muted inline-action" href="<?= e(base_url('combos')) ?>">Về danh sách combo</a>
     </div>
 
+    <?php if ($canManage): ?>
     <section class="card" style="margin-bottom: 18px;">
         <div class="stack section-head">
             <h3 style="margin: 0;"><?= $isEditing ? 'Cập nhật chiến dịch' : 'Thêm chiến dịch marketing' ?></h3>
@@ -74,20 +75,13 @@ $formValues = [
                 </div>
                 <div class="action-group action-group-right">
                     <?php if ($isEditing): ?>
-                    <button
-                        type="submit"
-                        class="btn btn-muted inline-action"
-                        formaction="<?= e(base_url('combos/campaigns/' . $editingCampaign['id'] . '/delete')) ?>"
-                        formmethod="post"
-                        onclick="return confirm('Bạn có chắc muốn xóa chiến dịch này không?');">
-                        Xóa
-                    </button>
                     <a class="btn btn-muted inline-action" href="<?= e(base_url('combos/campaigns')) ?>">Hủy sửa</a>
                     <?php endif; ?>
                 </div>
             </div>
         </form>
     </section>
+    <?php endif; ?>
 
     <section class="supplier-table-card">
         <div class="desktop-list">

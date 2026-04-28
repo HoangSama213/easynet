@@ -34,27 +34,16 @@ class Controller
 
     protected function requireAuth(): array
     {
-        $user = session_get('user');
+        require_once dirname(__DIR__, 2) . '/middleware/auth.php';
 
-        if (!$user) {
-            session_flash('error', 'Vui lòng đăng nhập để tiếp tục.');
-            redirect('login');
-        }
-
-        return $user;
+        return require_auth();
     }
 
-    protected function requireRole(array $roles): array
+    protected function requireEditor(): array
     {
-        $user = $this->requireAuth();
+        require_once dirname(__DIR__, 2) . '/middleware/require_editor.php';
 
-        if (!in_array($user['role'], $roles, true)) {
-            http_response_code(403);
-            $this->view('dashboard.forbidden', ['title' => 'Không có quyền truy cập']);
-            exit;
-        }
-
-        return $user;
+        return require_editor_access();
     }
 
     protected function validateCsrf(): void

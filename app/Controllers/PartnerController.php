@@ -29,6 +29,7 @@ class PartnerController extends Controller
 
     public function create(): void
     {
+        $this->requireEditor();
         $model = new Partner();
 
         $this->view('partners.form', [
@@ -46,6 +47,7 @@ class PartnerController extends Controller
 
     public function store(): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new Partner();
         $payload = $this->validatedPayload('doi-tac/create');
@@ -58,6 +60,7 @@ class PartnerController extends Controller
 
     public function edit(string $id): void
     {
+        $this->requireEditor();
         $model = new Partner();
         $item = $model->find((int) $id);
 
@@ -84,6 +87,7 @@ class PartnerController extends Controller
 
     public function update(string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new Partner();
         $payload = $this->validatedPayload('doi-tac/edit/' . (int) $id);
@@ -96,6 +100,7 @@ class PartnerController extends Controller
 
     public function destroy(string $id): void
     {
+        $this->requireEditor();
         $this->validateCsrf();
         $model = new Partner();
         $model->delete((int) $id);

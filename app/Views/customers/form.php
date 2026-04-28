@@ -48,9 +48,6 @@ $deletePrompt .= ' không?';
                 <button type="submit" class="inline-action"><?= e($submitLabel ?? 'Lưu dữ liệu') ?></button>
             </div>
             <div class="action-group action-group-right">
-                <?php if (!empty($deleteAction)): ?>
-                <button type="button" class="btn btn-muted inline-action" data-modal-open="delete-modal">Xóa</button>
-                <?php endif; ?>
                 <a class="btn btn-muted inline-action" href="<?= e($backUrl ?? base_url('khach-hang')) ?>">Quay lại</a>
             </div>
         </div>
@@ -63,7 +60,6 @@ $deletePrompt .= ' không?';
         <h3 id="delete-modal-title">Xác nhận xóa</h3>
         <p><?= e($deletePrompt) ?></p>
         <div class="stack modal-actions">
-            <button type="button" class="btn btn-muted inline-action" data-modal-close>Hủy</button>
             <form method="POST" action="<?= e($deleteAction) ?>">
                 <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
                 <button type="submit" class="inline-action">Xác nhận xóa</button>

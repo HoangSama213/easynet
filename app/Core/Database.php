@@ -3,27 +3,14 @@
 namespace App\Core;
 
 use PDO;
-use PDOException;
 
 class Database
 {
     private PDO $pdo;
 
-    public function __construct(array $config)
+    public function __construct(PDO $pdo)
     {
-        $dsn = sprintf(
-            '%s:host=%s;port=%s;dbname=%s;charset=%s',
-            $config['driver'],
-            $config['host'],
-            $config['port'],
-            $config['database'],
-            $config['charset']
-        );
-
-        $this->pdo = new PDO($dsn, $config['username'], $config['password'], [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]);
+        $this->pdo = $pdo;
     }
 
     public function pdo(): PDO
