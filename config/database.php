@@ -48,6 +48,7 @@ $database = getenv('DB_DATABASE') ?: 'easynet';
 $username = getenv('DB_USERNAME') ?: 'root';
 $password = getenv('DB_PASSWORD') ?: '123456';
 $charset = getenv('DB_CHARSET') ?: 'utf8mb4';
+$timeout = max(1, (int) (getenv('DB_CONNECT_TIMEOUT') ?: '5'));
 
 $dsn = sprintf(
     'mysql:host=%s;port=%s;dbname=%s;charset=%s',
@@ -60,4 +61,5 @@ $dsn = sprintf(
 return new \PDO($dsn, $username, $password, [
     \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
     \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+    \PDO::ATTR_TIMEOUT => $timeout,
 ]);
