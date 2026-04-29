@@ -17,9 +17,39 @@ if (!function_exists('config')) {
 }
 
 if (!function_exists('base_url')) {
+    function normalized_base_path(?string $scriptName = null): string
+    {
+        $scriptName = str_replace('\\', '/', (string) ($scriptName ?? ($_SERVER['SCRIPT_NAME'] ?? '')));
+        $directory = str_replace('\\', '/', dirname($scriptName));
+        $directory = trim($directory, " \t\n\r\0\x0B/.");
+
+        return $directory === '' ? '' : '/' . $directory;
+    }
+
+    function detected_base_url(): string
+    {
+        $scheme = 'http';
+        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+            $scheme = 'https';
+        }
+
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $basePath = normalized_base_path();
+
+        return $scheme . '://' . $host . $basePath;
+    }
+
     function base_url(string $path = ''): string
     {
-        $baseUrl = rtrim((string) config('app.base_url', ''), '/');
+        $configuredBaseUrl = rtrim((string) config('app.base_url', ''), '/');
+        $appEnv = (string) getenv('APP_ENV');
+
+        if ($appEnv === 'local' && isset($_SERVER['HTTP_HOST'])) {
+            $baseUrl = rtrim(detected_base_url(), '/');
+        } else {
+            $baseUrl = $configuredBaseUrl !== '' ? $configuredBaseUrl : rtrim(detected_base_url(), '/');
+        }
+
         $path = ltrim($path, '/');
 
         return $path === '' ? $baseUrl : $baseUrl . '/' . $path;

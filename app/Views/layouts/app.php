@@ -8,8 +8,10 @@
     <?php
     $cssFile = dirname(__DIR__, 3) . '/public/assets/css/app.css';
     $jsFile = dirname(__DIR__, 3) . '/public/assets/js/app.js';
+    $themeJsFile = dirname(__DIR__, 3) . '/public/assets/js/theme.js';
     $cssVersion = is_file($cssFile) ? (string) filemtime($cssFile) : '1';
     $jsVersion = is_file($jsFile) ? (string) filemtime($jsFile) : '1';
+    $themeJsVersion = is_file($themeJsFile) ? (string) filemtime($themeJsFile) : '1';
     $requestUri = $_SERVER['REQUEST_URI'] ?? '';
     $canManage = function_exists('is_editor') && is_editor();
     $hasTopbarFilters = !empty($topbarFilters);
@@ -131,6 +133,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="<?= e(asset('assets/js/theme.js') . '?v=' . $themeJsVersion) ?>"></script>
     <link rel="stylesheet" href="<?= e(asset('assets/css/app.css') . '?v=' . $cssVersion) ?>">
     <?php foreach ($extraCssFiles as $extraCssFile): ?>
         <?php
@@ -258,6 +261,9 @@
                         <?php endif; ?>
 
                         <div class="topbar-actions">
+                            <button type="button" class="theme-toggle" data-theme-toggle aria-label="Chuyển chế độ sáng tối">
+                                <span class="theme-toggle-icon" data-theme-icon>🌙</span>
+                            </button>
                             <?php if ($hasSessionUser): ?>
                                 <div class="notification-shell" data-notification-shell>
                                     <button type="button" class="notification-bell" data-notification-toggle aria-expanded="false" aria-label="Mở thông báo">
@@ -346,6 +352,10 @@
                 <div class="page-content">
                     <?= $content ?>
                 </div>
+
+                <footer class="app-footer">
+                    <p>&copy; 2026 easynet</p>
+                </footer>
             </div>
         </main>
     </div>

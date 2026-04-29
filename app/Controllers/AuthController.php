@@ -90,6 +90,7 @@ class AuthController extends Controller
         $update->execute(['id' => (int) $user['id']]);
 
         unset($_SESSION['login_error'], $_SESSION['login_old_email']);
+        session_write_close();
 
         redirect('');
     }
@@ -112,6 +113,7 @@ class AuthController extends Controller
         }
 
         session_destroy();
+        session_write_close();
 
         redirect('login');
     }

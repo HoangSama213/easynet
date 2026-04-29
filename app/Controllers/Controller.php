@@ -18,7 +18,6 @@ class Controller
         if (session_get('user')) {
             try {
                 $thongBaoModel = new ThongBao();
-                $thongBaoModel->dongBoTonKho();
                 $data['thongBaoTopbar'] = $thongBaoModel->topbarData();
             } catch (Throwable) {
                 $data['thongBaoTopbar'] = [

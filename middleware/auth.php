@@ -3,6 +3,13 @@
 declare(strict_types=1);
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'secure' => false,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
     session_name((string) require dirname(__DIR__) . '/config/session_name.php');
     session_start();
 }
@@ -10,8 +17,20 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 if (!function_exists('project_url')) {
     function project_url(string $path = ''): string
     {
-        $appConfig = require dirname(__DIR__) . '/config/app.php';
-        $baseUrl = rtrim((string) ($appConfig['base_url'] ?? ''), '/');
+        if (function_exists('base_url')) {
+            return base_url($path);
+        }
+
+        $scheme = 'http';
+        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+            $scheme = 'https';
+        }
+
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+        $directory = str_replace('\\', '/', dirname($scriptName));
+        $basePath = trim($directory, " \t\n\r\0\x0B/.");
+        $baseUrl = $scheme . '://' . $host . ($basePath !== '' ? '/' . $basePath : '');
         $path = ltrim($path, '/');
 
         return $path === '' ? $baseUrl : $baseUrl . '/' . $path;
@@ -29,6 +48,7 @@ if (!function_exists('sync_auth_session')) {
             $_SESSION['email'] = (string) ($sessionUser['email'] ?? ($_SESSION['email'] ?? ''));
             $_SESSION['role'] = (string) $sessionUser['role'];
             $_SESSION['chuc_vu'] = (string) ($sessionUser['chuc_vu'] ?? ($_SESSION['chuc_vu'] ?? ''));
+
             return;
         }
 

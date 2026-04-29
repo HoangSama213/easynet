@@ -7,6 +7,14 @@ use App\Core\Database;
 use App\Core\Request;
 use App\Core\Router;
 
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'secure' => false,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+
 session_name((string) require dirname(__DIR__) . '/config/session_name.php');
 session_start();
 
