@@ -1,3 +1,9 @@
+<?php
+$rows = $rows ?? [];
+$pagination = $pagination ?? ['page' => 1, 'last_page' => 1];
+$keyword = (string) ($keyword ?? '');
+?>
+
 <section class="supplier-page">
     <div class="supplier-page-head">
         <div>
@@ -8,7 +14,7 @@
     <section class="supplier-table-card">
         <div class="desktop-list">
             <div class="table-wrap">
-                <table class="product-table product-table-modern">
+                <table class="product-table product-table-modern product-price-history-table">
                     <thead>
                         <tr>
                             <th>Mã SKU</th>

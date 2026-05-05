@@ -3,6 +3,7 @@ $selectedProduct = $selectedProduct ?? null;
 $crossSellRows = $crossSellRows ?? [];
 $upSellRows = $upSellRows ?? [];
 $canManage = function_exists('is_editor') && is_editor();
+$selectedProduct = is_array($selectedProduct) ? $selectedProduct : [];
 $selectedId = (int) ($selectedProduct['id'] ?? 0);
 $buildTabUrl = static function (string $path) use ($selectedId): string {
     if ($selectedId > 0) {

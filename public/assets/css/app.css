@@ -983,6 +983,46 @@ th {
   min-width: 100%;
 }
 
+.product-display-table th:first-child,
+.product-display-table td:first-child {
+  width: 52px;
+  padding-right: 16px;
+}
+
+.product-display-table .supplier-row-main td:first-child {
+  padding-right: 16px;
+}
+
+.product-price-history-table th:nth-child(1),
+.product-price-history-table td:nth-child(1) {
+  width: 12%;
+}
+
+.product-price-history-table th:nth-child(2),
+.product-price-history-table td:nth-child(2) {
+  width: 26%;
+}
+
+.product-price-history-table th:nth-child(3),
+.product-price-history-table td:nth-child(3) {
+  width: 20%;
+}
+
+.product-price-history-table th:nth-child(4),
+.product-price-history-table td:nth-child(4) {
+  width: 12%;
+}
+
+.product-price-history-table th:nth-child(5),
+.product-price-history-table td:nth-child(5) {
+  width: 14%;
+}
+
+.product-price-history-table th:nth-child(6),
+.product-price-history-table td:nth-child(6) {
+  width: 16%;
+}
+
 .product-thumb {
   width: 88px;
   height: 88px;
@@ -1797,10 +1837,6 @@ body {
   padding-left: 32px;
 }
 
-.content {
-  padding: 18px 22px 22px;
-}
-
 .topbar {
   position: sticky;
   top: 0;
@@ -2534,6 +2570,19 @@ body {
   font-weight: 600;
 }
 
+.notification-mark-read-form {
+  margin: 0;
+}
+
+.notification-action-button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
 .notification-empty {
   padding: 18px 16px;
   color: #6b7280;
@@ -2780,6 +2829,7 @@ html[data-theme='dark'] .modal-card p {
 html[data-theme='dark'] .brand-name,
 html[data-theme='dark'] .supplier-link,
 html[data-theme='dark'] .notification-all-link,
+html[data-theme='dark'] .notification-action-button,
 html[data-theme='dark'] .page-title,
 html[data-theme='dark'] .product-inline-link,
 html[data-theme='dark'] .product-detail-block h5,

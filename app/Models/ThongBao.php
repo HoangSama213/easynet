@@ -251,6 +251,21 @@ class ThongBao
         );
     }
 
+    public function danhDauDaDoc(int $id): void
+    {
+        if ($id <= 0) {
+            return;
+        }
+
+        $this->database->execute(
+            'UPDATE thong_bao
+             SET trang_thai = "da_xem",
+                 updated_at = NOW()
+             WHERE id = :id',
+            ['id' => $id]
+        );
+    }
+
     public function soChuaDoc(): int
     {
         $row = $this->database->first(

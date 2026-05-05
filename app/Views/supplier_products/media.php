@@ -2,8 +2,10 @@
 $canManage = function_exists('is_editor') && is_editor();
 $selectedProduct = $selectedProduct ?? null;
 $mediaData = $mediaData ?? ['media' => ['anh' => null, 'video' => null, 'pdf' => null]];
+$rows = $rows ?? [];
 $pagination = $pagination ?? ['page' => 1, 'last_page' => 1];
 $keyword = $keyword ?? '';
+$old = $old ?? [];
 $oldMediaItems = $old['media_items'] ?? [];
 
 $fixedMediaItems = [

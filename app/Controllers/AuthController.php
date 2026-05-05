@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\App;
+use App\Services\AuthService;
 
 class AuthController extends Controller
 {
@@ -42,27 +43,22 @@ class AuthController extends Controller
         }
 
         $pdo = App::get('db')->pdo();
-        $statement = $pdo->prepare(
-            'SELECT id, ho_ten, email, password, role, chuc_vu, trang_thai
-             FROM users
-             WHERE email = :email
-             LIMIT 1'
-        );
-        $statement->execute(['email' => $email]);
-        $user = $statement->fetch();
+        $authService = new AuthService($pdo);
+        $result = $authService->authenticate($email, $password);
 
-        if (!$user) {
+        if (($result['status'] ?? '') === 'invalid_credentials') {
             $_SESSION['login_error'] = 'Email hoặc mật khẩu không đúng';
             redirect('login');
         }
 
-        if (($user['trang_thai'] ?? '') === 'khoa') {
+        if (($result['status'] ?? '') === 'locked') {
             $_SESSION['login_error'] = 'Tài khoản đã bị khóa';
             redirect('login');
         }
 
-        if (!password_verify($password, (string) $user['password'])) {
-            $_SESSION['login_error'] = 'Email hoặc mật khẩu không đúng';
+        $user = $result['user'] ?? null;
+        if (!is_array($user)) {
+            $_SESSION['login_error'] = 'Đăng nhập không thành công, vui lòng thử lại.';
             redirect('login');
         }
 
@@ -82,12 +78,7 @@ class AuthController extends Controller
             'chuc_vu' => (string) ($user['chuc_vu'] ?? ''),
         ];
 
-        $update = $pdo->prepare(
-            'UPDATE users
-             SET lan_dang_nhap_cuoi = NOW()
-             WHERE id = :id'
-        );
-        $update->execute(['id' => (int) $user['id']]);
+        $authService->updateLastLogin((int) $user['id']);
 
         unset($_SESSION['login_error'], $_SESSION['login_old_email']);
         session_write_close();

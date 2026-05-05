@@ -4,7 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($title ?? config('app.name')) ?></title>
+    <?php
+    $title = (string) ($title ?? config('app.name'));
+    $topbarFilters = $topbarFilters ?? [];
+    $topbarButton = $topbarButton ?? [];
+    $content = (string) ($content ?? '');
+    ?>
+    <title><?= e($title) ?></title>
     <?php
     $cssFile = dirname(__DIR__, 3) . '/public/assets/css/app.css';
     $jsFile = dirname(__DIR__, 3) . '/public/assets/js/app.js';
@@ -254,7 +260,7 @@
                                     </select>
                                 <?php endif; ?>
 
-                                <button type="submit" class="btn filter-button">Lọc</button>
+                                <button type="submit" class="btn filter-button">Tìm kiếm</button>
                             </form>
                         <?php else: ?>
                             <div class="topbar-spacer"></div>
@@ -292,7 +298,7 @@
                                                     <div class="notification-section">
                                                         <div class="notification-section-title">Mới</div>
                                                         <?php foreach ($thongBaoTopbar['moi'] as $item): ?>
-                                                            <a class="notification-item is-unread" href="<?= e(base_url('thong-bao')) ?>">
+                                                            <a class="notification-item is-unread" href="<?= e(base_url('thong-bao/xem/' . (int) ($item['id'] ?? 0) . '?redirect_to=thong-bao')) ?>">
                                                                 <span class="notification-level <?= e((string) ($item['muc_do'] ?? 'info')) ?>"></span>
                                                                 <span class="notification-content">
                                                                     <strong><?= e($item['tieu_de'] ?? '') ?></strong>
@@ -324,6 +330,13 @@
                                         </div>
 
                                         <div class="notification-dropdown-actions">
+                                            <?php if (($thongBaoTopbar['so_chua_doc'] ?? 0) > 0): ?>
+                                                <form method="POST" action="<?= e(base_url('thong-bao/danh-dau-da-doc')) ?>" class="notification-mark-read-form">
+                                                    <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
+                                                    <input type="hidden" name="redirect_to" value="<?= e(base_url()) ?>">
+                                                    <button type="submit" class="notification-all-link notification-action-button">Đánh dấu tất cả đã đọc</button>
+                                                </form>
+                                            <?php endif; ?>
                                             <a class="notification-all-link" href="<?= e(base_url('thong-bao')) ?>">Xem tất cả thông báo &rarr;</a>
                                         </div>
                                     </div>

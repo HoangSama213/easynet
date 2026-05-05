@@ -1,5 +1,8 @@
 <?php
 $canManage = function_exists('is_editor') && is_editor();
+$rows = $rows ?? [];
+$pagination = $pagination ?? ['page' => 1, 'last_page' => 1];
+$keyword = (string) ($keyword ?? '');
 
 $resolveAssetUrl = static function (?string $path): string {
     $path = trim((string) $path);

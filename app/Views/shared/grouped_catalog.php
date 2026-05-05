@@ -1,4 +1,12 @@
-<?php $canManage = function_exists('is_editor') && is_editor(); ?>
+<?php
+$canManage = function_exists('is_editor') && is_editor();
+$heading = (string) ($heading ?? '');
+$createUrl = (string) ($createUrl ?? '');
+$basePath = (string) ($basePath ?? '');
+$items = $items ?? [];
+$pagination = $pagination ?? ['page' => 1, 'last_page' => 1];
+$keyword = (string) ($keyword ?? '');
+?>
 
 <section class="supplier-page">
     <div class="supplier-page-head">

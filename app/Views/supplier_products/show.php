@@ -1,4 +1,9 @@
 <?php
+$errors = $errors ?? [];
+$old = $old ?? [];
+$formAction = (string) ($formAction ?? '');
+$priceHistory = $priceHistory ?? [];
+
 $fieldClass = static function (string $field, array $errors): string {
     return isset($errors[$field]) ? 'input-error' : '';
 };

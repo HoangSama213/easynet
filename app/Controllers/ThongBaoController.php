@@ -18,7 +18,17 @@ class ThongBaoController extends Controller
             'title' => 'Thông báo',
             'rows' => $pagination['items'],
             'pagination' => $pagination,
+            'unreadCount' => $model->soChuaDoc(),
         ]);
+    }
+
+    public function markRead(string $id): void
+    {
+        $model = new ThongBao();
+        $model->danhDauDaDoc((int) $id);
+
+        $redirectTo = trim((string) $this->request->input('redirect_to', 'thong-bao'));
+        redirect($redirectTo !== '' ? $redirectTo : 'thong-bao');
     }
 
     public function markAllRead(): void

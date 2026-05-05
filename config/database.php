@@ -26,6 +26,10 @@ if (!function_exists('load_env_file')) {
                 continue;
             }
 
+            if (getenv($name) !== false) {
+                continue;
+            }
+
             if (
                 (str_starts_with($value, '"') && str_ends_with($value, '"'))
                 || (str_starts_with($value, "'") && str_ends_with($value, "'"))

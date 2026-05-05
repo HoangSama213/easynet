@@ -22,8 +22,18 @@ if (!function_exists('base_url')) {
         $scriptName = str_replace('\\', '/', (string) ($scriptName ?? ($_SERVER['SCRIPT_NAME'] ?? '')));
         $directory = str_replace('\\', '/', dirname($scriptName));
         $directory = trim($directory, " \t\n\r\0\x0B/.");
+        $directory = preg_replace('#/public$#', '', '/' . $directory);
+        $directory = trim((string) $directory, " \t\n\r\0\x0B/.");
 
         return $directory === '' ? '' : '/' . $directory;
+    }
+
+    function is_public_document_root(): bool
+    {
+        $documentRoot = str_replace('\\', '/', (string) ($_SERVER['DOCUMENT_ROOT'] ?? ''));
+        $documentRoot = rtrim($documentRoot, '/');
+
+        return $documentRoot !== '' && basename($documentRoot) === 'public';
     }
 
     function detected_base_url(): string
@@ -59,7 +69,13 @@ if (!function_exists('base_url')) {
 if (!function_exists('asset')) {
     function asset(string $path): string
     {
-        return base_url('public/' . ltrim($path, '/'));
+        $path = ltrim($path, '/');
+
+        if (is_public_document_root()) {
+            return base_url($path);
+        }
+
+        return base_url('public/' . $path);
     }
 }
 

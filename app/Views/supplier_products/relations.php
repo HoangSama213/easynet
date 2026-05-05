@@ -4,6 +4,7 @@ $relationData = $relationData ?? ['cross_sell' => [], 'up_sell' => []];
 $pagination = $pagination ?? ['page' => 1, 'last_page' => 1];
 $keyword = $keyword ?? '';
 $detailOptions = $detailOptions ?? [];
+$old = $old ?? [];
 $oldCrossSell = $old['cross_sell_items'] ?? ($relationData['cross_sell'] ?? []);
 $oldUpSell = $old['up_sell_items'] ?? ($relationData['up_sell'] ?? []);
 

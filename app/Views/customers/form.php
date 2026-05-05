@@ -1,4 +1,10 @@
 <?php
+$errors = $errors ?? [];
+$old = $old ?? [];
+$formAction = (string) ($formAction ?? '');
+$categoryOptions = $categoryOptions ?? [];
+$deleteName = (string) ($deleteName ?? '');
+$deleteAction = (string) ($deleteAction ?? '');
 $fieldClass = static function (string $field, array $errors): string {
     return isset($errors[$field]) ? 'input-error' : '';
 };

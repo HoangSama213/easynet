@@ -36,15 +36,14 @@ spl_autoload_register(function (string $class): void {
     }
 });
 
-$config = [
-    'app' => require dirname(__DIR__) . '/config/app.php',
-    'database' => require dirname(__DIR__) . '/config/database.php',
-];
-
-App::setConfig($config);
-date_default_timezone_set((string) config('app.timezone', 'Asia/Ho_Chi_Minh'));
-
 try {
+    $config = [
+        'app' => require dirname(__DIR__) . '/config/app.php',
+        'database' => require dirname(__DIR__) . '/config/database.php',
+    ];
+
+    App::setConfig($config);
+    date_default_timezone_set((string) config('app.timezone', 'Asia/Ho_Chi_Minh'));
     App::set('db', new Database(config('database')));
 } catch (Throwable $exception) {
     http_response_code(500);

@@ -113,6 +113,7 @@ $router->get('/combos/analytics', [ComboController::class, 'analytics']);
 $router->get('/sales', [ComboController::class, 'sales']);
 */
 $router->get('/thong-bao', [ThongBaoController::class, 'index']);
+$router->get('/thong-bao/xem/{id}', [ThongBaoController::class, 'markRead']);
 $router->post('/thong-bao/danh-dau-da-doc', [ThongBaoController::class, 'markAllRead']);
 /*
 $router->get('/combos/{id}', [ComboController::class, 'show']);

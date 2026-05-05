@@ -1,3 +1,10 @@
+<?php
+$searchKeyword = (string) ($searchKeyword ?? '');
+$searchResults = $searchResults ?? [];
+$stats = $stats ?? [];
+$recentSuppliers = $recentSuppliers ?? [];
+?>
+
 <section class="supplier-page">
     <div class="supplier-page-head">
         <div>

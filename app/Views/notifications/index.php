@@ -1,8 +1,22 @@
+<?php
+$rows = $rows ?? [];
+$pagination = $pagination ?? ['page' => 1, 'last_page' => 1];
+$keyword = (string) ($keyword ?? '');
+$unreadCount = (int) ($unreadCount ?? 0);
+?>
+
 <section class="supplier-page">
     <div class="supplier-page-head">
         <div>
             <h1 class="page-title">Thông báo</h1>
         </div>
+        <?php if ($unreadCount > 0): ?>
+            <form method="POST" action="<?= e(base_url('thong-bao/danh-dau-da-doc')) ?>">
+                <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
+                <input type="hidden" name="redirect_to" value="<?= e(base_url('thong-bao')) ?>">
+                <button type="submit" class="btn">Đánh dấu tất cả đã đọc</button>
+            </form>
+        <?php endif; ?>
     </div>
 
     <section class="supplier-table-card">
@@ -26,7 +40,7 @@
                             </tr>
                         <?php endif; ?>
 
-                        <?php foreach (($rows ?? []) as $row): ?>
+                        <?php foreach ($rows as $row): ?>
                             <tr class="<?= ($row['trang_thai'] ?? '') === 'chua_xem' ? 'notification-row-unread' : '' ?>">
                                 <td>
                                     <span class="notification-level <?= e((string) ($row['muc_do'] ?? 'info')) ?>"></span>
@@ -60,7 +74,7 @@
                     </div>
                 <?php endif; ?>
 
-                <?php foreach (($rows ?? []) as $row): ?>
+                <?php foreach ($rows as $row): ?>
                     <article class="mobile-card notification-mobile-card <?= ($row['trang_thai'] ?? '') === 'chua_xem' ? 'is-unread' : '' ?>">
                         <div class="mobile-card-head">
                             <div class="notification-mobile-title">

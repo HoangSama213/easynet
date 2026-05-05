@@ -1,4 +1,12 @@
 <?php
+$formAction = (string) ($formAction ?? '');
+$errors = $errors ?? [];
+$categories = $categories ?? [];
+$old = $old ?? [];
+$deleteName = (string) ($deleteName ?? '');
+$deleteAction = (string) ($deleteAction ?? '');
+$submitLabel = (string) ($submitLabel ?? 'Lưu nhà cung cấp');
+
 $fieldClass = static function (string $field, array $errors): string {
     return isset($errors[$field]) ? 'input-error' : '';
 };
